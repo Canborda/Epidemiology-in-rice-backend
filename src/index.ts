@@ -1,24 +1,15 @@
-console.log('Try npm run lint/fix!');
+import express, {Application} from 'express';
 
-const longString =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ut aliquet diam.';
+// Express server
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-const trailing = 'Semicolon';
+// Defaul endpoint
+app.use('/', (req, res) => {
+  res.status(200).json({ping: 'pong'});
+});
 
-const why = 'am I tabbed?';
-
-export function doSomeStuff(
-  withThis: string,
-  andThat: string,
-  andThose: string[]
-) {
-  //function on one line
-  if (!andThose.length) {
-    return false;
-  }
-  console.log(withThis);
-  console.log(andThat);
-  console.dir(andThose);
-  return;
-}
-// TODO: more examples
+// Start application
+app.listen(PORT, () => {
+  console.log(`Epidemiology-in-rice app listening on port ${PORT}`);
+});
