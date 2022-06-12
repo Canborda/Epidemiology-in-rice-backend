@@ -4,18 +4,22 @@ import Joi from 'joi';
 import validatorMiddleware from '../middlewares/validator.middleware';
 
 class UserValidator {
-  public login(req: Request, res: Response, next: NextFunction) {
-    console.log('INSIDE USER LOGIN VALIDATOR');
-    // Call validator middleware
-    const error_msg = 'Error validating body to login user';
-    validatorMiddleware(req, res, next);
-  }
+  /**
+   * This class validates the requests from USER routes
+   */
 
   public register(req: Request, res: Response, next: NextFunction) {
-    console.log('INSIDE USER REGISTER VALIDATOR');
+    // Define validator schema
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
+      name: Joi.string().required(),
+      country: Joi.string().max(3),
+      avatar: Joi.string().uri().allow(null, ''),
+    });
     // Call validator middleware
     const error_msg = 'Error validating body to register login';
-    validatorMiddleware(req, res, next);
+    validatorMiddleware(req, res, next, req.body, schema, error_msg);
   }
 }
 
