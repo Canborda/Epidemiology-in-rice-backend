@@ -5,6 +5,7 @@ import express, { Application } from 'express';
 
 import requestMiddleware from './middlewares/request.middleware';
 import responseMiddleware from './middlewares/response.middleware';
+import errorMiddleware from './middlewares/error.middleware';
 
 import { ROUTES } from './utils/constants';
 import userRouter from './routers/user.router';
@@ -19,7 +20,7 @@ class App {
     this.requestMiddleware();
     this.initRoutes();
     this.responseMiddleware();
-    //TODO add errorMiddleware
+    this.errorMiddleware();
   }
 
   private initMiddleware() {
@@ -40,6 +41,10 @@ class App {
 
   private responseMiddleware() {
     this._app.use(responseMiddleware);
+  }
+
+  private errorMiddleware() {
+    this._app.use(errorMiddleware);
   }
 
   public get app() {
