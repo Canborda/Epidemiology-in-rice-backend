@@ -18,7 +18,7 @@
   "keywords": [],
   "scripts": {
     "start": "node dist/index.js",
-    "watch": "concurrently \"tsc -w\" \"nodemon --watch ./build/ --exec npm run start\"",
+    "watch": "concurrently \"tsc -w\" \"nodemon --watch dist/ --exec npm run start\"",
     "build": "tsc",
     "lint": "gts lint",
     "clean": "gts clean",
@@ -38,6 +38,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
+    "helmet": "^5.1.0",
     "joi": "^17.6.0",
     "tedious": "^14.5.0",
     "ts-node": "^10.8.1"
