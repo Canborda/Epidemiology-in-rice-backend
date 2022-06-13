@@ -7,7 +7,7 @@ import mapController from '../controllers/map.controller';
 
 const router = express.Router();
 
-router.get('/', mapValidator.get, mapController.get);
+router.get('/', mapValidator.get, mapController.get.bind(mapController));
 router.post('/', mapValidator.create, mapController.create.bind(mapController));
 
 export default router;
