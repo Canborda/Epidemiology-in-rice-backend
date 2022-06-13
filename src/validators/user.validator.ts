@@ -18,7 +18,7 @@ class UserValidator {
       avatar: Joi.string().uri().allow(null, ''),
     });
     // Call validator middleware
-    const error_msg = 'Error validating body to register login';
+    const error_msg = 'Error validating body to register user';
     validatorMiddleware(req, res, next, req.body, schema, error_msg);
   }
 }

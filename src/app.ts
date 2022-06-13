@@ -9,6 +9,7 @@ import errorMiddleware from './middlewares/error.middleware';
 
 import { ROUTES } from './utils/constants';
 import userRouter from './routers/user.router';
+import mapRouter from './routers/map.router';
 
 class App {
   private _app: Application;
@@ -33,6 +34,7 @@ class App {
   private initRoutes() {
     // Add routers
     this._app.use(ROUTES.user.BASE, userRouter);
+    this._app.use(ROUTES.map.BASE, mapRouter);
   }
 
   private requestMiddleware() {
