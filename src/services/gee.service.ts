@@ -4,11 +4,17 @@ class GEEService {
   //#region PUBLIC methods
 
   test() {
-    const image = new ee.ImageCollection('LANDSAT/LC08/C01/T1_TOA').first();
-    const url = image
-      .visualize({ bands: ['B4', 'B3', 'B2'], gamma: 1.5 })
+    const NAIP = ee.ImageCollection('USDA/NAIP/DOQQ');
+    let bounds = ee.Geometry.Rectangle([
+      [-105.53, 40.75],
+      [-105.17, 40.56],
+    ]);
+    let naip2011 = NAIP.filterDate('2011-01-01', '2011-12-31').filterBounds(bounds);
+    const url = naip2011
+      .first()
+      .visualize({ bands: ['N', 'R', 'G'], gamma: 1.5 })
       .getThumbURL({ dimensions: '1024x1024', format: 'jpg' });
-    return url;
+    return { url, points: bounds.coordinates_ };
   }
 
   //#endregion
