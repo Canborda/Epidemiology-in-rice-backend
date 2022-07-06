@@ -35,11 +35,21 @@ export class ExistenceError extends BaseError {
     this.code = 400;
   }
 }
+
 export class NonExistenceError extends BaseError {
   constructor(message: string, params: object) {
     super(message);
     this.name = 'Non-Existence Error';
     this.details = Object.entries(params).map(param => param.join(': '));
     this.code = 400;
+  }
+}
+
+export class AuthenticationError extends BaseError {
+  constructor(message: string, details: string = '') {
+    super(message);
+    this.name = 'Authentication Error';
+    this.details = details ? [details] : [];
+    this.code = 403;
   }
 }

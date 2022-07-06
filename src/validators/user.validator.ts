@@ -8,8 +8,19 @@ class UserValidator {
    * This class validates the requests from USER routes
    */
 
+  public login(req: Request, res: Response, next: NextFunction) {
+    // Define validation schema
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
+    });
+    // Call validator middleware
+    const error_msg = 'Error validating body to login user';
+    validatorMiddleware(req, res, next, req.body, schema, error_msg);
+  }
+
   public register(req: Request, res: Response, next: NextFunction) {
-    // Define validator schema
+    // Define validation schema
     const schema = Joi.object({
       email: Joi.string().email().required(),
       password: Joi.string().required(),

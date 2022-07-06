@@ -7,6 +7,7 @@ import userController from '../controllers/user.controller';
 
 const router = express.Router();
 
+router.post(ROUTES.user.login, userValidator.login, userController.login);
 router.post(ROUTES.user.register, userValidator.register, userController.register.bind(userController));
 
 export default router;

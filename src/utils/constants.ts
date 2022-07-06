@@ -1,11 +1,12 @@
 export const ROUTES = {
   user: {
     BASE: '/api/v1/users',
+    login: '/login',
     register: '/register',
   },
-  map: {
+  maps: {
     BASE: '/api/v1/maps',
-  }
+  },
 };
 
 export const OPERATIONS = {
