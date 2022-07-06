@@ -10,6 +10,7 @@ import errorMiddleware from './middlewares/error.middleware';
 import { ROUTES } from './utils/constants';
 import userRouter from './routers/user.router';
 import mapRouter from './routers/map.router';
+import geeRouter from './routers/gee.router';
 
 class App {
   private _app: Application;
@@ -35,6 +36,7 @@ class App {
     // Add routers
     this._app.use(ROUTES.user.BASE, userRouter);
     this._app.use(ROUTES.map.BASE, mapRouter);
+    this._app.use('/api/v1/gee', geeRouter); //FIXME replace hardcoded endpoint
   }
 
   private requestMiddleware() {
