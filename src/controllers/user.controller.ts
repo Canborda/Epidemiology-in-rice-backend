@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import jsonwebtoken from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 import { AuthenticationError, ExistenceError } from '../utils/errors';
 import { encryptData } from '../utils/functions';
@@ -31,7 +31,7 @@ class UserController {
       // Generate access_token
       const secretKey = process.env.SECRET_KEY || '';
       const expires_in = 30 * 60;
-      const access_token = jsonwebtoken.sign(res.locals.schema, secretKey, { expiresIn: expires_in });
+      const access_token = jwt.sign(res.locals.schema, secretKey, { expiresIn: expires_in });
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.user.login;
       res.locals.content = { access_token, token_type: 'Bearer', expires_in, scope: '' };
