@@ -27,6 +27,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     if (!user) {
       throw new AuthenticationError('User not found for given access_token', email);
     }
+    // Add data to locals to use in controllers
     res.locals.user = user;
     next();
   } catch (error) {

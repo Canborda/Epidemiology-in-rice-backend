@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
 import { AuthenticationError, ExistenceError } from '../utils/errors';
-import { encryptData } from '../utils/functions';
 import { OPERATIONS } from '../utils/constants';
 
 import { UserModel } from '../models/user.model';
@@ -24,8 +23,8 @@ class UserController {
         throw new AuthenticationError('Incorrect email', email);
       }
       // Verify password
-      //TODO send encrypted password and remove encryptData()
-      if (encryptData(password) !== user.password) {
+      //TODO send encrypted password and remove encryptData()?
+      if (!(await user.comparePassword(password))) {
         throw new AuthenticationError('Incorrect password');
       }
       // Generate access_token
@@ -49,9 +48,7 @@ class UserController {
     try {
       // Find if the user already exists
       await this.validateEmail(res.locals.schema.email);
-      // Encrypt password
-      res.locals.schema.password = encryptData(res.locals.schema.password);
-      // Insert new document
+      // Insert new document (password encrypted on UserModel)
       const result = await UserModel.create(res.locals.schema);
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.user.register;

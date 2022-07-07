@@ -1,10 +1,29 @@
-import mongoose from 'mongoose';
+import { Schema, Document, model } from 'mongoose';
+import { UserI } from './user.model';
 
-const mapSchema = new mongoose.Schema({
-  userId: String,
-  name: String,
-  polygon: Array,
+export interface MapI extends Document {
+  owner: UserI['_id'];
+  name: string;
+  polygon: Array<Float32List>;
+}
+
+const mapSchema = new Schema({
+  owner: {
+    type: Schema.Types.ObjectId,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  polygon: {
+    type: Array<Float32List>,
+    required: true,
+  },
 });
 
+// Add index for searches by name
+mapSchema.index({ name: 1 }, { unique: false });
+
 // Generate & export model
-export const MapModel = mongoose.model('Map', mapSchema);
+export const MapModel = model<MapI>('Map', mapSchema);

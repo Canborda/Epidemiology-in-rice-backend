@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { OPERATIONS } from '../utils/constants';
-import { ExistenceError, NonExistenceError } from '../utils/errors';
+import { ExistenceError } from '../utils/errors';
 
-import { MapModel } from '../models/map.model';
-import { UserModel } from '../models/user.model';
+import { MapI, MapModel } from '../models/map.model';
+import { UserI } from '../models/user.model';
 
 class MapController {
   /**
@@ -16,11 +16,9 @@ class MapController {
 
   public async get(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId, mapId } = res.locals.schema;
-      // Find if user already exists
-      await this.validateUserId(userId);
+      const user: UserI = res.locals.user;
       // Retrieve filtered documents
-      const result = mapId ? await MapModel.findById(mapId) : await MapModel.find({ userId });
+      const result = await MapModel.find({ owner: user._id });
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.maps.get;
       res.locals.content = { data: result };
@@ -32,11 +30,14 @@ class MapController {
 
   public async create(req: Request, res: Response, next: NextFunction) {
     try {
-      // Find if user and map aleady exists
-      await this.validateName(res.locals.schema.name);
-      await this.validateUserId(res.locals.schema.userId);
+      const user: UserI = res.locals.user;
+      const map: MapI = res.locals.schema;
+      // Asign owner to new document
+      map.owner = user._id;
+      // Find if aleady exists a map with same name for the same user
+      await this.validateName(user._id, map.name);
       // Insert new document
-      const result = await MapModel.create(res.locals.schema);
+      const result = await MapModel.create(map);
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.maps.create;
       res.locals.content = { data: result };
@@ -51,17 +52,10 @@ class MapController {
 
   //#region Existence validators
 
-  private async validateUserId(userId: string) {
-    const exists = await UserModel.findById(userId);
-    if (!exists) {
-      throw new NonExistenceError('The user does not exist', { userId });
-    }
-  }
-
-  private async validateName(name: string) {
-    const exists = await MapModel.findOne({ name });
+  private async validateName(owner: string, name: string) {
+    const exists = await MapModel.findOne({ owner, name });
     if (exists) {
-      throw new ExistenceError('A map with this name already exists', { name });
+      throw new ExistenceError('A map with this name already exists for the user', { name });
     }
   }
 
