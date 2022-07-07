@@ -12,6 +12,7 @@ export const ROUTES = {
 export const OPERATIONS = {
   user: {
     login: 'USER-LOGIN',
+    get: 'USER-GET-INFO',
     register: 'USER-REGISTER',
   },
   maps: {

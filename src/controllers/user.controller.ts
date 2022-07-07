@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { AuthenticationError, ExistenceError } from '../utils/errors';
 import { OPERATIONS } from '../utils/constants';
 
-import { UserModel } from '../models/user.model';
+import { UserI, UserModel } from '../models/user.model';
 
 class UserController {
   /**
@@ -44,7 +44,26 @@ class UserController {
 
   //#region CRUD
 
-  public async register(req: Request, res: Response, next: NextFunction) {
+  public async getUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user: UserI = res.locals.user;
+      // Filter user info
+      const result = {
+        email: user.email,
+        name: user.name,
+        country: user.country,
+        avatar: user.avatar,
+      };
+      // Add data to response and go to responseMiddleware
+      res.locals.operation = OPERATIONS.user.get;
+      res.locals.content = { data: result };
+      next();
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async createUser(req: Request, res: Response, next: NextFunction) {
     try {
       // Find if the user already exists
       await this.validateEmail(res.locals.schema.email);
