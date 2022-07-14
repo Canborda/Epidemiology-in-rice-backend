@@ -1,14 +1,22 @@
 export const ROUTES = {
-  user: {
-    BASE: '/api/v1/user',
+  users: {
+    BASE: '/api/v1/users',
     login: '/login',
-    register: '/register',
+    signup: '/signup',
+  },
+  maps: {
+    BASE: '/api/v1/maps',
   },
 };
 
 export const OPERATIONS = {
-  user: {
-    login: 'USER-LOGIN',
-    register: 'USER-REGISTER',
+  users: {
+    login: 'USER-LOG_IN',
+    get: 'USER-GET-INFO',
+    signup: 'USER-SIGN_UP',
+  },
+  maps: {
+    get: 'MAPS-GET',
+    create: 'MAPS-CREATE',
   },
 };

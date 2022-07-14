@@ -5,9 +5,12 @@ import express, { Application } from 'express';
 
 import requestMiddleware from './middlewares/request.middleware';
 import responseMiddleware from './middlewares/response.middleware';
+import errorMiddleware from './middlewares/error.middleware';
 
 import { ROUTES } from './utils/constants';
 import userRouter from './routers/user.router';
+import mapRouter from './routers/map.router';
+import geeRouter from './routers/gee.router';
 
 class App {
   private _app: Application;
@@ -19,7 +22,7 @@ class App {
     this.requestMiddleware();
     this.initRoutes();
     this.responseMiddleware();
-    //TODO add errorMiddleware
+    this.errorMiddleware();
   }
 
   private initMiddleware() {
@@ -31,7 +34,9 @@ class App {
 
   private initRoutes() {
     // Add routers
-    this._app.use(ROUTES.user.BASE, userRouter);
+    this._app.use(ROUTES.users.BASE, userRouter);
+    this._app.use(ROUTES.maps.BASE, mapRouter);
+    this._app.use('/api/v1/gee', geeRouter); //FIXME replace hardcoded endpoint
   }
 
   private requestMiddleware() {
@@ -40,6 +45,10 @@ class App {
 
   private responseMiddleware() {
     this._app.use(responseMiddleware);
+  }
+
+  private errorMiddleware() {
+    this._app.use(errorMiddleware);
   }
 
   public get app() {
