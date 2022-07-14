@@ -34,7 +34,7 @@ class App {
 
   private initRoutes() {
     // Add routers
-    this._app.use(ROUTES.user.BASE, userRouter);
+    this._app.use(ROUTES.users.BASE, userRouter);
     this._app.use(ROUTES.maps.BASE, mapRouter);
     this._app.use('/api/v1/gee', geeRouter); //FIXME replace hardcoded endpoint
   }

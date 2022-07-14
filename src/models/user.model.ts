@@ -5,7 +5,7 @@ export interface UserI extends Document {
   email: string;
   password: string;
   name: string;
-  country: string;
+  region: string;
   avatar: string;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
@@ -24,7 +24,7 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  country: {
+  region: {
     type: String,
     required: true,
   },

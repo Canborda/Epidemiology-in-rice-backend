@@ -8,9 +8,9 @@ import userController from '../controllers/user.controller';
 
 const router = express.Router();
 
-router.post(ROUTES.user.login, userValidator.login, userController.login);
+router.post(ROUTES.users.login, userValidator.login, userController.login);
 
 router.get('/', authMiddleware, userController.getUser);
-router.post(ROUTES.user.register, userValidator.register, userController.createUser.bind(userController));
+router.post(ROUTES.users.signup, userValidator.register, userController.createUser.bind(userController));
 
 export default router;

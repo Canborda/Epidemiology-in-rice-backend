@@ -20,19 +20,19 @@ class UserController {
       const { email, password } = res.locals.schema;
       const user = await UserModel.findOne({ email });
       if (!user) {
-        throw new AuthenticationError('Incorrect email', email);
+        throw new AuthenticationError('Email incorrecto o no registrado', email);
       }
       // Verify password
       //TODO send encrypted password and remove encryptData()?
       if (!(await user.comparePassword(password))) {
-        throw new AuthenticationError('Incorrect password');
+        throw new AuthenticationError('Contraseña incorrecta');
       }
       // Generate access_token
       const secretKey = process.env.SECRET_KEY || '';
       const expires_in = 30 * 60;
       const access_token = jwt.sign({ _id: user._id }, secretKey, { expiresIn: expires_in });
       // Add data to response and go to responseMiddleware
-      res.locals.operation = OPERATIONS.user.login;
+      res.locals.operation = OPERATIONS.users.login;
       res.locals.content = { access_token, token_type: 'Bearer', expires_in, scope: '' };
       next();
     } catch (error) {
@@ -51,11 +51,11 @@ class UserController {
       const result = {
         email: user.email,
         name: user.name,
-        country: user.country,
+        region: user.region,
         avatar: user.avatar,
       };
       // Add data to response and go to responseMiddleware
-      res.locals.operation = OPERATIONS.user.get;
+      res.locals.operation = OPERATIONS.users.get;
       res.locals.content = { data: result };
       next();
     } catch (error) {
@@ -70,8 +70,8 @@ class UserController {
       // Insert new document (password encrypted on UserModel)
       const result = await UserModel.create(res.locals.schema);
       // Add data to response and go to responseMiddleware
-      res.locals.operation = OPERATIONS.user.register;
-      res.locals.content = { data: result };
+      res.locals.operation = OPERATIONS.users.signup;
+      res.locals.content = { data: result, message: 'Usuario creado correctamente' };
       res.locals.status = 201;
       next();
     } catch (error) {
@@ -86,7 +86,7 @@ class UserController {
   private async validateEmail(email: string) {
     const exists = await UserModel.findOne({ email });
     if (exists) {
-      throw new ExistenceError('This email is already registered', { email });
+      throw new ExistenceError('Este email ya se encuentra registrado', { email });
     }
   }
 

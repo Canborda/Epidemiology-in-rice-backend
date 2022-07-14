@@ -25,7 +25,7 @@ class UserValidator {
       email: Joi.string().email().required(),
       password: Joi.string().required(),
       name: Joi.string().required(),
-      country: Joi.string().max(3),
+      region: Joi.string(),
       avatar: Joi.string().uri().allow(null, ''),
     });
     // Call validator middleware
