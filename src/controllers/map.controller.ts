@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { OPERATIONS } from '../utils/constants';
-import { ExistenceError } from '../utils/errors';
+import { ExistenceError, NonExistenceError } from '../utils/errors';
 
 import { MapI, MapModel } from '../models/map.model';
 import { UserI } from '../models/user.model';
@@ -42,6 +42,29 @@ class MapController {
       res.locals.operation = OPERATIONS.maps.create;
       res.locals.content = { data: result };
       res.locals.status = 201;
+      next();
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user: UserI = res.locals.user;
+      const { map_id } = req.params;
+      // Find map
+      const result = await MapModel.findOne({ owner: user._id, _id: map_id });
+      if (!result) {
+        throw new NonExistenceError('Map does not exists or does not belong to user', {
+          user_id: user._id,
+          map_id,
+        });
+      }
+      // Remove map
+      await result.delete();
+      // Add data to response and go to responseMiddleware
+      res.locals.operation = OPERATIONS.maps.delete;
+      res.locals.status = 204;
       next();
     } catch (error) {
       next(error);

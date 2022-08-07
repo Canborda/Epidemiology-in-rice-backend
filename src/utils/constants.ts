@@ -18,5 +18,6 @@ export const OPERATIONS = {
   maps: {
     get: 'MAPS-GET',
     create: 'MAPS-CREATE',
+    delete: 'MAPS-DELETE',
   },
 };
