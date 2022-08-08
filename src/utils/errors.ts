@@ -10,10 +10,10 @@ export class BaseError extends Error {
 }
 
 export class InternalError extends BaseError {
-  constructor(message: string) {
-    super(message);
+  constructor(error: Error) {
+    super(error.message);
     this.name = 'Internal Error';
-    this.details = [this.stack || ''];
+    this.details = [error.stack!];
     this.code = 500;
   }
 }

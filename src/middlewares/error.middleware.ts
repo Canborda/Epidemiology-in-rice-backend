@@ -4,7 +4,7 @@ import { BaseError, InternalError } from '../utils/errors';
 
 export default (err: Error, req: Request, res: Response, next: NextFunction) => {
   // Type error
-  const typedError: BaseError = toTypedError(err);
+  const typedError: BaseError = err instanceof BaseError ? err : new InternalError(err);
   console.log(`New ERROR type ${typedError.name}.`);
   // Send error response
   res.status(typedError.code || 500).json({
@@ -12,8 +12,4 @@ export default (err: Error, req: Request, res: Response, next: NextFunction) => 
     message: typedError.message,
     details: typedError.details,
   });
-};
-
-const toTypedError = (error: Error) => {
-  return error instanceof BaseError ? error : new InternalError(error.message || 'Unknown internal error');
 };

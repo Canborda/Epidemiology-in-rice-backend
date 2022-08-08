@@ -7,6 +7,10 @@ export const ROUTES = {
   maps: {
     BASE: '/api/v1/maps',
   },
+  gee: {
+    BASE: '/api/v1/gee',
+    ndvi: '/ndvi',
+  },
 };
 
 export const OPERATIONS = {
@@ -19,5 +23,8 @@ export const OPERATIONS = {
     get: 'MAPS-GET',
     create: 'MAPS-CREATE',
     delete: 'MAPS-DELETE',
+  },
+  gee: {
+    ndvi: 'GEE-GET-NDVI',
   },
 };
