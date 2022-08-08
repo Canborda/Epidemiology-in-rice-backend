@@ -1,11 +1,11 @@
 import CryptoJS from 'crypto-js';
 
-import { InternalError } from './errors';
+import { BaseError } from './errors';
 
 export function encryptData(data: string) {
   // Load and validate environment variables
   const secretKey = process.env.SECRET_KEY || '';
-  if (!secretKey.length) throw new InternalError('Missing SECRET_KEY environment variable');
+  if (!secretKey.length) throw new BaseError('Missing SECRET_KEY environment variable');
   // Create hash
   const key = CryptoJS.SHA256(secretKey);
   const encryptedData = CryptoJS.AES.encrypt(data, key, {
@@ -19,7 +19,7 @@ export function encryptData(data: string) {
 export function decryptData(data: string) {
   // Load an validate environment variables
   const secretKey = process.env.SECRET_KEY || '';
-  if (!secretKey.length) throw new InternalError('Missing SECRET_KEY environment variable');
+  if (!secretKey.length) throw new BaseError('Missing SECRET_KEY environment variable');
   // Create hash
   const key = CryptoJS.SHA256(secretKey);
   const decryptedData = CryptoJS.AES.decrypt(data, key, {
