@@ -3,6 +3,7 @@ export const ROUTES = {
     BASE: '/api/v1/users',
     login: '/login',
     signup: '/signup',
+    makeAdmin: '/:user_id/make-admin',
   },
   maps: {
     BASE: '/api/v1/maps',

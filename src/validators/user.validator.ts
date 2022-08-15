@@ -26,7 +26,6 @@ class UserValidator {
       password: Joi.string().required(),
       name: Joi.string().required(),
       region: Joi.string(),
-      avatar: Joi.string().uri().allow(null, ''),
     });
     // Call validator middleware
     const error_msg = 'Error validating body to register user';
