@@ -7,10 +7,16 @@ export const ROUTES = {
   },
   maps: {
     BASE: '/api/v1/maps',
+    delete: '/:map_id',
   },
   gee: {
     BASE: '/api/v1/gee',
     ndvi: '/ndvi',
+  },
+  crop: {
+    BASE: '/api/v1/crops',
+    update: '/:crop_id',
+    delete: '/:crop_id',
   },
 };
 
@@ -19,6 +25,13 @@ export const OPERATIONS = {
     login: 'USER-LOG_IN',
     get: 'USER-GET-INFO',
     signup: 'USER-SIGN_UP',
+    makeAdmin: 'USER-MAKE_ADMIN',
+  },
+  crops: {
+    get: 'CROPS-GET',
+    create: 'CROPS-CREATE',
+    update: 'CROPS-UPDATE',
+    delete: 'CROPS-DELETE',
   },
   maps: {
     get: 'MAPS-GET',
