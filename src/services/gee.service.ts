@@ -24,7 +24,7 @@ class GEEService {
         max: 1,
         palette: ['blue', 'cyan', 'white', 'yellow', 'green'],
       })
-      .getThumbURL({ dimensions: '1024x1024', format: 'jpg' });
+      .getThumbURL({ dimensions: '1024x1024', format: 'png' });
     // Extract image date from ee.Date
     const date = new Date(image.date().getInfo().value);
     // Find bounding box
