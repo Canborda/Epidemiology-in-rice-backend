@@ -27,6 +27,26 @@ class UserValidator {
     const error_msg = 'Error validating body to create map';
     validatorMiddleware(req, res, next, req.body, schema, error_msg);
   }
+
+  public update(req: Request, res: Response, next: NextFunction) {
+    // Define validator schema
+    const schema = Joi.object({
+      crop: Joi.string().optional(),
+      name: Joi.string().optional(),
+      seedDate: Joi.date().iso().optional(),
+      polygon: Joi.array()
+        .items(
+          Joi.array()
+            .ordered(Joi.number().min(-180).max(180).required(), Joi.number().min(-90).max(90).required())
+            .required(),
+        )
+        .min(3)
+        .optional(),
+    });
+    // Call validator middleware
+    const error_msg = 'Error validating body to update map';
+    validatorMiddleware(req, res, next, req.body, schema, error_msg);
+  }
 }
 
 export default new UserValidator();

@@ -7,6 +7,7 @@ export const ROUTES = {
   },
   maps: {
     BASE: '/api/v1/maps',
+    update: '/:map_id',
     delete: '/:map_id',
   },
   gee: {
@@ -36,6 +37,7 @@ export const OPERATIONS = {
   maps: {
     get: 'MAPS-GET',
     create: 'MAPS-CREATE',
+    update: 'MAPS-UPDATE',
     delete: 'MAPS-DELETE',
   },
   gee: {
