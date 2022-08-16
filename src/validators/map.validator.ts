@@ -11,7 +11,9 @@ class UserValidator {
   public create(req: Request, res: Response, next: NextFunction) {
     // Define validator schema
     const schema = Joi.object({
+      crop: Joi.string().required(),
       name: Joi.string().required(),
+      seedDate: Joi.date().iso().required(),
       polygon: Joi.array()
         .items(
           Joi.array()

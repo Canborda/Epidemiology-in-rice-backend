@@ -4,6 +4,7 @@ import { OPERATIONS } from '../utils/constants';
 import { ExistenceError, NonExistenceError } from '../utils/errors';
 
 import { MapI, MapModel } from '../models/map.model';
+import { CropModel } from '../models/crop.model';
 import { UserI } from '../models/user.model';
 
 class MapController {
@@ -34,6 +35,8 @@ class MapController {
       const map: MapI = res.locals.schema;
       // Asign owner to new document
       map.owner = user._id;
+      // Check if crop exists
+      await this.validateCrop(map.crop);
       // Find if aleady exists a map with same name for the same user
       await this.validateName(user._id, map.name);
       // Insert new document
@@ -80,6 +83,11 @@ class MapController {
     if (exists) {
       throw new ExistenceError('A map with this name already exists for the user', { name });
     }
+  }
+
+  private async validateCrop(crop_id: string) {
+    const exists = await CropModel.findById(crop_id);
+    if (!exists) throw new NonExistenceError('Crop not found for given params', { crop_id });
   }
 
   //#endregion
