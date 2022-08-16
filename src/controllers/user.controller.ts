@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
-import { AuthenticationError, ExistenceError } from '../utils/errors';
 import { OPERATIONS } from '../utils/constants';
+import { AuthenticationError, ExistenceError, NonExistenceError } from '../utils/errors';
 
-import { UserI, UserModel } from '../models/user.model';
+import { RolesOptions, UserI, UserModel } from '../models/user.model';
 
 class UserController {
   /**
-   * This controller contains the CRUD for the [users] collection.
+   * Contains authentication methods and CRUD for the [users] collection.
    * All endpoints are exposed for the frontend.
    */
 
@@ -40,6 +40,27 @@ class UserController {
     }
   }
 
+  public async makeAdmin(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user: UserI = res.locals.user;
+      const { user_id } = req.params;
+      // Find user
+      const result = await UserModel.findById(user_id);
+      if (!result) {
+        throw new NonExistenceError('User not found', { user_id });
+      }
+      // Update user role
+      result.role = RolesOptions.ADMIN;
+      await result.save();
+      // Add data to response and go to responseMiddleware
+      res.locals.operation = OPERATIONS.users.makeAdmin;
+      res.locals.status = 204;
+      next();
+    } catch (error) {
+      next(error);
+    }
+  }
+
   //#endregion
 
   //#region CRUD
@@ -49,10 +70,10 @@ class UserController {
       const user: UserI = res.locals.user;
       // Filter user info
       const result = {
+        role: user.role,
         email: user.email,
         name: user.name,
         region: user.region,
-        avatar: user.avatar,
       };
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.users.get;

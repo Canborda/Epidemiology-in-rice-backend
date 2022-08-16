@@ -9,6 +9,7 @@ import errorMiddleware from './middlewares/error.middleware';
 
 import { ROUTES } from './utils/constants';
 import userRouter from './routers/user.router';
+import cropRouter from './routers/crop.router';
 import mapRouter from './routers/map.router';
 import geeRouter from './routers/gee.router';
 
@@ -35,6 +36,7 @@ class App {
   private initRoutes() {
     // Add routers
     this._app.use(ROUTES.users.BASE, userRouter);
+    this._app.use(ROUTES.crop.BASE, cropRouter);
     this._app.use(ROUTES.maps.BASE, mapRouter);
     this._app.use(ROUTES.gee.BASE, geeRouter);
   }

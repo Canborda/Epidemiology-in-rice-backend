@@ -2,15 +2,25 @@ import { Schema, Document, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 export interface UserI extends Document {
+  role: number;
   email: string;
   password: string;
   name: string;
   region: string;
-  avatar: string;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
+export enum RolesOptions {
+  USER,
+  ADMIN,
+}
+
 const userSchema = new Schema({
+  role: {
+    type: Number,
+    required: true,
+    default: RolesOptions.USER,
+  },
   email: {
     type: String,
     unique: true,
@@ -27,10 +37,6 @@ const userSchema = new Schema({
   region: {
     type: String,
     required: true,
-  },
-  avatar: {
-    type: String,
-    required: false,
   },
 });
 

@@ -13,14 +13,14 @@ export default function (
 ) {
   try {
     // Validate request
-    const validated = schema.validate(obj);
+    const validated = schema.validate(obj, { abortEarly: false });
     if (validated.error) {
-      throw new ValidationError(error_msg, [
-        validated.error.details[0].message,
-        validated.error.details[0].context?.value
-          ? `Given value: ${validated.error.details[0].context?.value}`
-          : `No value given`,
-      ]);
+      throw new ValidationError(
+        error_msg,
+        validated.error.details.map(
+          detail => `${detail.message}. Given value: ${detail.context?.value ?? 'null'}`,
+        ),
+      );
     }
     // Store validated object for controller
     res.locals.schema = validated.value;

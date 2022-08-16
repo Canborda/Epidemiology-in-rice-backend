@@ -25,7 +25,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     // Find user for given credentials
     const user = await UserModel.findById(_id);
     if (!user) {
-      throw new AuthenticationError('User not found for given access_token', _id);
+      throw new AuthenticationError('User not found for given access_token', `user_id: ${_id}`);
     }
     // Add data to locals to use in controllers
     res.locals.user = user;
