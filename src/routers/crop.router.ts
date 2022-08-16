@@ -16,8 +16,13 @@ router.patch(
   authMiddleware,
   adminMiddleware,
   cropValidator.update,
-  cropController.update,
+  cropController.update.bind(cropController),
 );
-router.delete(ROUTES.crop.delete, authMiddleware, adminMiddleware, cropController.delete);
+router.delete(
+  ROUTES.crop.delete,
+  authMiddleware,
+  adminMiddleware,
+  cropController.delete.bind(cropController),
+);
 
 export default router;

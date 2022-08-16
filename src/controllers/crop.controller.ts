@@ -48,16 +48,13 @@ class CropController {
 
   public async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const { phenology, disseases } = res.locals.schema;
       const { crop_id } = req.params;
-      // Find if crop exists
-      const result = await CropModel.findById(crop_id);
-      if (!result) {
-        throw new NonExistenceError('Crop not found for given params', { crop_id });
-      }
+      const crop: CropI = res.locals.schema;
+      // Find crop (if exists)
+      const result = await this.findCrop(crop_id);
       // Update fields (if exists)
-      if (phenology) result.phenology = phenology;
-      if (disseases) result.disseases = disseases;
+      if (crop.phenology) result.phenology = crop.phenology;
+      if (crop.disseases) result.disseases = crop.disseases;
       await result.save();
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.crops.update;
@@ -71,9 +68,8 @@ class CropController {
   public async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const { crop_id } = req.params;
-      // Find crop
-      const result = await CropModel.findById(crop_id);
-      if (!result) throw new NonExistenceError('Crop not found for given params', { crop_id });
+      // Find crop (if exists)
+      const result = await this.findCrop(crop_id);
       // Remove crop
       await result.delete();
       // Add data to response and go to responseMiddleware
@@ -88,6 +84,12 @@ class CropController {
   //#endregion
 
   //#region Existence validators
+
+  private async findCrop(crop_id: string): Promise<CropI> {
+    const result = await CropModel.findById(crop_id);
+    if (!result) throw new NonExistenceError('Crop not found for given params', { crop_id });
+    return result;
+  }
 
   //#endregion
 }
