@@ -54,7 +54,6 @@ class CropController {
       const result = await this.findCrop(crop_id);
       // Update fields (if exists)
       if (crop.phenology) result.phenology = crop.phenology;
-      if (crop.disseases) result.disseases = crop.disseases;
       await result.save();
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.crops.update;

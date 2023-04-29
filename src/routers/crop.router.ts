@@ -15,7 +15,7 @@ router.patch(
   ROUTES.crop.update,
   authMiddleware,
   adminMiddleware,
-  cropValidator.update,
+  cropValidator.update.bind(cropValidator),
   cropController.update.bind(cropController),
 );
 router.delete(

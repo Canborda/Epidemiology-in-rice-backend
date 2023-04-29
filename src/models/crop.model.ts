@@ -1,11 +1,22 @@
 import { Schema, Document, model } from 'mongoose';
 
+import { INDEXES } from '../utils/enums';
+
 export interface CropI extends Document {
   name: string;
   variety: string;
-  phenology: object;
-  disseases: string[];
-  indexes: string[];
+  phenology: PhenologyI[];
+}
+
+export interface PhenologyI {
+  name: string;
+  days: number;
+  indexes: Array<IndexI>;
+}
+
+export interface IndexI {
+  name: INDEXES;
+  value: number;
 }
 
 const cropSchema = new Schema({
@@ -18,17 +29,13 @@ const cropSchema = new Schema({
     required: true,
   },
   phenology: {
-    type: Object,
+    type: Array<PhenologyI>,
     required: true,
   },
-  disseases: {
-    type: Array<String>,
-    required: true,
-  }
 });
 
-// Add index for searches by name
-cropSchema.index({ name: 1 }, { unique: false });
+// Add index for searches by name and variety
+cropSchema.index({ name: 1, variety: -1 }, { unique: true });
 
 // Generate & export model
 export const CropModel = model<CropI>('Crop', cropSchema);
