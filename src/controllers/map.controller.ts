@@ -22,7 +22,7 @@ class MapController {
       const result = await MapModel.find({ owner: user._id });
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.maps.get;
-      res.locals.content = { data: result };
+      res.locals.content = { count: result.length, data: result };
       next();
     } catch (error) {
       next(error);

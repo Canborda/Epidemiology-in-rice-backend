@@ -1,8 +1,10 @@
 import { Schema, Document, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
+import { ROLES } from '../utils/enums';
+
 export interface UserI extends Document {
-  role: number;
+  role: ROLES;
   email: string;
   password: string;
   name: string;
@@ -10,16 +12,11 @@ export interface UserI extends Document {
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-export enum RolesOptions {
-  USER,
-  ADMIN,
-}
-
 const userSchema = new Schema({
   role: {
     type: Number,
     required: true,
-    default: RolesOptions.USER,
+    default: ROLES.USER,
   },
   email: {
     type: String,

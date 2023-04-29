@@ -2,9 +2,10 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
 import { OPERATIONS } from '../utils/constants';
+import { ROLES } from '../utils/enums';
 import { AuthenticationError, ExistenceError, NonExistenceError } from '../utils/errors';
 
-import { RolesOptions, UserI, UserModel } from '../models/user.model';
+import { UserI, UserModel } from '../models/user.model';
 
 class UserController {
   /**
@@ -50,7 +51,7 @@ class UserController {
         throw new NonExistenceError('User not found', { user_id });
       }
       // Update user role
-      result.role = RolesOptions.ADMIN;
+      result.role = ROLES.ADMIN;
       await result.save();
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.users.makeAdmin;

@@ -1,17 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
 
+import { ROLES } from '../utils/enums';
 import { AuthenticationError } from '../utils/errors';
 
-import { RolesOptions, UserI } from '../models/user.model';
+import { UserI } from '../models/user.model';
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user: UserI = res.locals.user;
-    if (user.role !== RolesOptions.ADMIN) {
-      throw new AuthenticationError(
-        'User has no needed permissions',
-        `Current role: ${RolesOptions[user.role]}`,
-      );
+    if (user.role !== ROLES.ADMIN) {
+      throw new AuthenticationError('User has no needed permissions', `Current role: ${ROLES[user.role]}`);
     }
     next();
   } catch (error) {
