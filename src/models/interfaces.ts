@@ -1,7 +1,7 @@
 export interface IndexDataI {
   name: string;
   formula: any;
-  visualizeOptions: VisualizeOptionsI
+  visualizeOptions: VisualizeOptionsI;
 }
 
 interface VisualizeOptionsI {
@@ -11,7 +11,7 @@ interface VisualizeOptionsI {
 }
 
 export interface ImagesResponseI {
-  url: object;
+  url: string;
   date: Date;
   bbox: number[][];
 }

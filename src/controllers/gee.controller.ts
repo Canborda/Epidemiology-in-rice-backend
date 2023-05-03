@@ -40,7 +40,7 @@ class GeeController {
   public async getImages(req: Request, res: Response, next: NextFunction) {
     try {
       const user: UserI = res.locals.user;
-      const { map_id } = res.locals.schema;
+      const { map_id, index, cloudyPercentage } = res.locals.schema;
       // Get coordinates
       const map = await MapModel.findOne({ owner: user._id, _id: map_id });
       if (!map) {
@@ -54,7 +54,7 @@ class GeeController {
         this.getCredentials(),
         () => {
           const polygon = this.invertCoordinates(map.polygon);
-          const result = geeService.getImages(polygon);
+          const result = geeService.getImages(polygon, index, cloudyPercentage);
           // Add data to response and go to responseMiddleware
           res.locals.operation = OPERATIONS.gee.images;
           res.locals.content = { data: result };

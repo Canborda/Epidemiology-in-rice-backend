@@ -1,3 +1,5 @@
+import { NonExistenceError } from '../utils/errors';
+
 import { Indexes } from '../models/INDEXES_DATA';
 import { ImagesResponseI } from '../models/interfaces';
 
@@ -13,32 +15,31 @@ class GEEService {
     return new Indexes(new ee.Image()).indexesList.map(index => index.name);
   }
 
-  getImages(polygon: Float32List[]) {
+  getImages(polygon: Float32List[], index: string, cloudyPercentage: number) {
     // Imports
     const imageCollection = ee.ImageCollection('COPERNICUS/S2');
     const geometry = ee.Geometry.Polygon(polygon);
-    // Filter image spatially and temporally
+    // Filter imageCollection spatially, clouds and select most recent image
     let image = imageCollection
       .filterBounds(geometry)
-      .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 10))
+      .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', cloudyPercentage))
       .sort('system:time_start', false)
       .first()
       .clip(geometry);
-    // Compute all available indexes
-    const indexesObj = new Indexes(image);
-    let imageIndexes = ee.Image(indexesObj.indexesList.map(index => index.formula.rename(index.name)));
+    // Check if index is available
+    let indexesObj = new Indexes(image);
+    let imageIndex = indexesObj.indexesList.find(idx => idx.name === index);
+    if (!imageIndex) throw new NonExistenceError('Index is not supported (yet)', [`index: ${index}`]);
     // Generate image URL
-    const imageURLs: any = {};
-    indexesObj.indexesList.forEach(index => {
-      imageURLs[index.name] = imageIndexes
-        .visualize({
-          bands: [index.name],
-          min: index.visualizeOptions.min,
-          max: index.visualizeOptions.max,
-          palette: index.visualizeOptions.palette,
-        })
-        .getThumbURL({ dimensions: '1024x1024', format: 'png' });
-    });
+    const imageUrl = ee
+      .Image([imageIndex.formula.rename(index)])
+      .visualize({
+        bands: [imageIndex.name],
+        min: imageIndex.visualizeOptions.min,
+        max: imageIndex.visualizeOptions.max,
+        palette: imageIndex.visualizeOptions.palette,
+      })
+      .getThumbURL({ dimensions: '1024x1024', format: 'png' });
     // Extract image date from ee.Date
     const imageDate = new Date(image.date().getInfo().value);
     // Find bounding box
@@ -53,7 +54,7 @@ class GEEService {
     const imageBbox = [northWest, southEast];
     // Return processed data
     const response: ImagesResponseI = {
-      url: imageURLs,
+      url: imageUrl,
       date: imageDate,
       bbox: imageBbox,
     };
