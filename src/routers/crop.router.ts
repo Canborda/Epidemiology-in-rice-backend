@@ -10,7 +10,13 @@ import cropController from '../controllers/crop.controller';
 const router = express.Router();
 
 router.get('/', authMiddleware, cropController.get);
-router.post('/', authMiddleware, adminMiddleware, cropValidator.create, cropController.create);
+router.post(
+  '/',
+  authMiddleware,
+  adminMiddleware,
+  cropValidator.create.bind(cropValidator),
+  cropController.create.bind(cropController),
+);
 router.patch(
   ROUTES.crop.update,
   authMiddleware,

@@ -1,3 +1,4 @@
+import { INDEXES } from '../utils/enums';
 import { IndexDataI } from './interfaces';
 
 export class Indexes {
@@ -13,7 +14,7 @@ export class Indexes {
     // Build earth-engine Image for available bands
     this.indexesList = [
       {
-        name: 'NDVI',
+        name: INDEXES.NORMALIZED_DIFFERENCE_VEGETATION_INDEX,
         formula: nir.subtract(red).divide(nir.add(red)),
         visualizeOptions: {
           min: -0.2,
@@ -36,7 +37,7 @@ export class Indexes {
       },
       {
         // FIXME FIX OPTIONS FOR RVI INDEX
-        name: 'RVI',
+        name: INDEXES.RATIO_VEGETATION_INDEX,
         formula: nir.divide(red),
         visualizeOptions: {
           min: -1,
