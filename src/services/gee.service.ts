@@ -1,9 +1,15 @@
+import { Indexes } from '../models/INDEXES_DATA';
+import { ImagesResponseI } from '../models/interfaces';
+
 const ee = require('@google/earthengine');
 
 class GEEService {
-  //#region PUBLIC methods
+  /**
+   * Handles all operations over images using GEE API
+   * for more references go to  https://developers.google.com/earth-engine/apidocs.
+   */
 
-  getNdviImage(polygon: Float32List[]) {
+  getImages(polygon: Float32List[]) {
     // Imports
     const imageCollection = ee.ImageCollection('COPERNICUS/S2');
     const geometry = ee.Geometry.Polygon(polygon);
@@ -14,19 +20,23 @@ class GEEService {
       .sort('system:time_start', false)
       .first()
       .clip(geometry);
-    // Compute Normalized Difference Vegetation Index (NDVI)
-    let ndvi = image.normalizedDifference(['B8', 'B4']).rename('NDVI');
-    // Process image and get URL
-    const url = ndvi
-      .visualize({
-        bands: ['NDVI'],
-        min: -1,
-        max: 1,
-        palette: ['blue', 'cyan', 'white', 'yellow', 'green'],
-      })
-      .getThumbURL({ dimensions: '1024x1024', format: 'png' });
+    // Compute all available indexes
+    const indexesObj = new Indexes(image);
+    let imageIndexes = ee.Image(indexesObj.indexesList.map(index => index.formula.rename(index.name)));
+    // Generate image URL
+    const imageURLs: any = {};
+    indexesObj.indexesList.forEach(index => {
+      imageURLs[index.name] = imageIndexes
+        .visualize({
+          bands: [index.name],
+          min: index.visualizeOptions.min,
+          max: index.visualizeOptions.max,
+          palette: index.visualizeOptions.palette,
+        })
+        .getThumbURL({ dimensions: '1024x1024', format: 'png' });
+    });
     // Extract image date from ee.Date
-    const date = new Date(image.date().getInfo().value);
+    const imageDate = new Date(image.date().getInfo().value);
     // Find bounding box
     let northWest = [
       Math.max(...polygon.map(coord => coord[1])),
@@ -36,9 +46,20 @@ class GEEService {
       Math.min(...polygon.map(coord => coord[1])),
       Math.max(...polygon.map(coord => coord[0])),
     ];
-    const bbox = [northWest, southEast];
+    const imageBbox = [northWest, southEast];
     // Return processed data
-    return { url, date, bbox };
+    const response: ImagesResponseI = {
+      url: imageURLs,
+      date: imageDate,
+      bbox: imageBbox,
+    };
+    return response;
+  }
+
+  getNdviValues(lng: number, lat: number, cloudyPercentage: number, seedDate: string) {
+    let coodrinates = ee.Geometry.Point(lng, lat);
+
+    return coodrinates;
   }
 
   test() {
@@ -54,8 +75,6 @@ class GEEService {
       .getThumbURL({ dimensions: '1024x1024', format: 'jpg' });
     return { url, points: bounds.coordinates_ };
   }
-
-  //#endregion
 }
 
 export default new GEEService();

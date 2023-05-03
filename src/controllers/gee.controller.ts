@@ -17,7 +17,7 @@ class GeeController {
 
   // #region SCRIPT methods
 
-  public async getNdviImage(req: Request, res: Response, next: NextFunction) {
+  public async getImages(req: Request, res: Response, next: NextFunction) {
     try {
       const user: UserI = res.locals.user;
       const { map_id } = res.locals.schema;
@@ -34,9 +34,9 @@ class GeeController {
         this.getCredentials(),
         () => {
           const polygon = this.invertCoordinates(map.polygon);
-          const result = geeService.getNdviImage(polygon);
+          const result = geeService.getImages(polygon);
           // Add data to response and go to responseMiddleware
-          res.locals.operation = OPERATIONS.gee.ndvi;
+          res.locals.operation = OPERATIONS.gee.images;
           res.locals.content = { data: result };
           next();
         },

@@ -12,7 +12,7 @@ export const ROUTES = {
   },
   gee: {
     BASE: '/api/v1/gee',
-    ndvi: '/ndvi',
+    images: '/images',
   },
   crop: {
     BASE: '/api/v1/crops',
@@ -41,6 +41,6 @@ export const OPERATIONS = {
     delete: 'MAPS-DELETE',
   },
   gee: {
-    ndvi: 'GEE-GET-NDVI',
+    images: 'GEE-GET_IMAGES',
   },
 };
