@@ -5,7 +5,7 @@ import { OPERATIONS } from '../utils/constants';
 import { ROLES } from '../utils/enums';
 import { AuthenticationError, ExistenceError, NonExistenceError } from '../utils/errors';
 
-import { UserI, UserModel } from '../models/user.model';
+import { UserI, UserModel } from '../models/dtos/user.model';
 
 class UserController {
   /**

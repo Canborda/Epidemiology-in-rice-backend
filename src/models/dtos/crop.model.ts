@@ -1,6 +1,6 @@
 import { Schema, Document, model } from 'mongoose';
 
-import { INDEXES } from '../utils/enums';
+import { INDEXES } from '../../utils/enums';
 
 export interface CropI extends Document {
   name: string;

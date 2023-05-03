@@ -4,7 +4,7 @@ import Joi from 'joi';
 import validatorMiddleware from '../middlewares/validator.middleware';
 import { INDEXES } from '../utils/enums';
 
-import { CropI, PhenologyI, IndexI } from '../models/crop.model';
+import { CropI, PhenologyI, IndexI } from '../models/dtos/crop.model';
 
 class CropValidator {
   /**

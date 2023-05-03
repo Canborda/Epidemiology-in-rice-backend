@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { OPERATIONS } from '../utils/constants';
 import { ExistenceError, NonExistenceError } from '../utils/errors';
 
-import { CropI, CropModel } from '../models/crop.model';
+import { CropI, CropModel } from '../models/dtos/crop.model';
 
 class CropController {
   /**

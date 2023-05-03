@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { OPERATIONS } from '../utils/constants';
-import { MapModel } from '../models/map.model';
-import { UserI } from '../models/user.model';
+import { MapModel } from '../models/dtos/map.model';
+import { UserI } from '../models/dtos/user.model';
 import { BaseError, NonExistenceError } from '../utils/errors';
 import { decryptData } from '../utils/functions';
 

@@ -1,7 +1,7 @@
 import { Schema, Document, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-import { ROLES } from '../utils/enums';
+import { ROLES } from '../../utils/enums';
 
 export interface UserI extends Document {
   role: ROLES;

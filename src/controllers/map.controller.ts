@@ -3,9 +3,9 @@ import { NextFunction, Request, Response } from 'express';
 import { OPERATIONS } from '../utils/constants';
 import { ExistenceError, NonExistenceError } from '../utils/errors';
 
-import { MapI, MapModel } from '../models/map.model';
-import { CropModel } from '../models/crop.model';
-import { UserI } from '../models/user.model';
+import { MapI, MapModel } from '../models/dtos/map.model';
+import { CropModel } from '../models/dtos/crop.model';
+import { UserI } from '../models/dtos/user.model';
 
 class MapController {
   /**

@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 
 import { AuthenticationError } from '../utils/errors';
 
-import { UserModel } from '../models/user.model';
+import { UserModel } from '../models/dtos/user.model';
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {

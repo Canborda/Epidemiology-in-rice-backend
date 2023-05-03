@@ -17,7 +17,7 @@
   "license": "Apache-2.0",
   "keywords": [],
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "npm run build && node dist/index.js",
     "dev": "nodemon src/index.ts --exec ts-node",
     "watch": "concurrently \"tsc -w\" \"nodemon --watch dist/ --exec npm run start\"",
     "build": "tsc",

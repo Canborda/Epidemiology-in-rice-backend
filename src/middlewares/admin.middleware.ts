@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { ROLES } from '../utils/enums';
 import { AuthenticationError } from '../utils/errors';
 
-import { UserI } from '../models/user.model';
+import { UserI } from '../models/dtos/user.model';
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
