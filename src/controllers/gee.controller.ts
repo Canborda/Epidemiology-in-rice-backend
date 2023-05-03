@@ -17,6 +17,26 @@ class GeeController {
 
   // #region SCRIPT methods
 
+  public async getIndexes(req: Request, res: Response, next: NextFunction) {
+    try {
+      // Use GEE service
+      ee.data.authenticateViaPrivateKey(
+        this.getCredentials(),
+        () => {
+          const result = geeService.getIndexes();
+          // Add data to response and go to responseMiddleware
+          res.locals.operation = OPERATIONS.gee.indexes;
+          res.locals.content = { data: result };
+          next();
+        },
+        (e: any) => next(e),
+      );
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+
   public async getImages(req: Request, res: Response, next: NextFunction) {
     try {
       const user: UserI = res.locals.user;

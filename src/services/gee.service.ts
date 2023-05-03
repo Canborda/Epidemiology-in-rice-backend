@@ -9,6 +9,10 @@ class GEEService {
    * for more references go to  https://developers.google.com/earth-engine/apidocs.
    */
 
+  getIndexes(): string[] {
+    return new Indexes(new ee.Image()).indexesList.map(index => index.name);
+  }
+
   getImages(polygon: Float32List[]) {
     // Imports
     const imageCollection = ee.ImageCollection('COPERNICUS/S2');
