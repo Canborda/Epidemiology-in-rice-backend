@@ -93,7 +93,7 @@ class UserController {
       const result = await UserModel.create(res.locals.schema);
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.users.signup;
-      res.locals.content = { data: result, message: 'Usuario creado correctamente' };
+      res.locals.content = { data: result };
       res.locals.status = 201;
       next();
     } catch (error) {
