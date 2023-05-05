@@ -1,10 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { OPERATIONS } from '../utils/constants';
-import { MapModel } from '../models/dtos/map.model';
-import { UserI } from '../models/dtos/user.model';
 import { BaseError, NonExistenceError } from '../utils/errors';
 import { decryptData } from '../utils/functions';
+
+import { UserI } from '../models/dtos/user.model';
+import { MapI, MapModel } from '../models/dtos/map.model';
+import { ImagesResponseI } from '../models/interfaces';
 
 import geeService from '../services/gee.service';
 
@@ -41,20 +43,23 @@ class GeeController {
     try {
       const user: UserI = res.locals.user;
       const { map_id, index, cloudyPercentage } = res.locals.schema;
-      // Get coordinates
-      const map = await MapModel.findOne({ owner: user._id, _id: map_id });
-      if (!map) {
-        throw new NonExistenceError('Map does not exists or does not belong to user', {
-          user_id: user._id,
-          map_id,
-        });
-      }
+      const map = await this.getMap(user._id, map_id);
       // Use GEE service
       ee.data.authenticateViaPrivateKey(
         this.getCredentials(),
         () => {
-          const polygon = this.invertCoordinates(map.polygon);
-          const result = geeService.getImages(polygon, index, cloudyPercentage);
+          // 1. Get latest image
+          const image = geeService.selectImage(map.polygon, cloudyPercentage);
+          // 2. Extract properties
+          const imageUrl = geeService.generateImageUrl(image, index);
+          const imageDate = geeService.getImageDate(image);
+          const imageBbox = geeService.getPolygonBoundingBox(map.polygon);
+          // 3. Pack result
+          const result: ImagesResponseI = {
+            url: imageUrl,
+            date: imageDate,
+            bbox: imageBbox,
+          };
           // Add data to response and go to responseMiddleware
           res.locals.operation = OPERATIONS.gee.images;
           res.locals.content = { data: result };
@@ -99,6 +104,18 @@ class GeeController {
     const gcPrivateKey = process.env.PRIVATE_KEY || '';
     if (!gcPrivateKey.length) throw new BaseError('Missing PRIVATE_KEY environment variable');
     return JSON.parse(decryptData(gcPrivateKey));
+  }
+
+  private async getMap(userId: string, mapId: string): Promise<MapI> {
+    const map = await MapModel.findOne({ owner: userId, _id: mapId });
+    if (!map) {
+      throw new NonExistenceError('Map does not exists or does not belong to user', {
+        userId,
+        mapId,
+      });
+    }
+    map.polygon = this.invertCoordinates(map.polygon);
+    return map;
   }
 
   private invertCoordinates(coordinates: Float32List[]): Float32List[] {

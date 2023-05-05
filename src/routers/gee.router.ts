@@ -9,12 +9,7 @@ import geeController from '../controllers/gee.controller';
 const router = express.Router();
 
 router.get(ROUTES.gee.indexes, authMiddleware, geeController.getIndexes.bind(geeController));
-router.get(
-  ROUTES.gee.images,
-  authMiddleware,
-  geeValidator.getImages,
-  geeController.getImages.bind(geeController),
-);
+router.get(ROUTES.gee.images, authMiddleware, geeValidator.get, geeController.getImages.bind(geeController));
 
 router.post('/', geeController.test.bind(geeController));
 
