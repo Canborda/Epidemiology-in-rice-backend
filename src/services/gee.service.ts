@@ -1,7 +1,6 @@
 import { NonExistenceError } from '../utils/errors';
 
 import { Indexes } from '../models/INDEXES_DATA';
-import { ImagesResponseI } from '../models/interfaces';
 
 const ee = require('@google/earthengine');
 
@@ -10,23 +9,41 @@ class GEEService {
    * Handles all operations over images using GEE API
    * for more references go to  https://developers.google.com/earth-engine/apidocs.
    */
+  COLLECTION = 'COPERNICUS/S2';
+
+  // #region FLOW methods
 
   getIndexes(): string[] {
     return new Indexes(new ee.Image()).indexesList.map(index => index.name);
   }
 
-  getImages(polygon: Float32List[], index: string, cloudyPercentage: number) {
-    // Imports
-    const imageCollection = ee.ImageCollection('COPERNICUS/S2');
+  selectImage(
+    polygon: Float32List[],
+    cloudyPercentage?: number,
+    date?: string,
+    getImageBeforeDate: boolean = true,
+  ) {
     const geometry = ee.Geometry.Polygon(polygon);
-    // Filter imageCollection spatially, clouds and select most recent image
-    let image = imageCollection
-      .filterBounds(geometry)
-      .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', cloudyPercentage))
-      .sort('system:time_start', false)
-      .first()
-      .clip(geometry);
-    // Check if index is available
+    let filteredCollection = ee.ImageCollection(this.COLLECTION).filterBounds(geometry);
+    if (cloudyPercentage) {
+      filteredCollection = filteredCollection.filter(
+        ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', cloudyPercentage),
+      );
+    }
+    if (date) {
+      let startDate = ee.Date(getImageBeforeDate ? '2000-01-01' : date);
+      let endDate = ee.Date(getImageBeforeDate ? date : new Date().toISOString().slice(0, 10));
+      if (!getImageBeforeDate) endDate = endDate.advance(1, 'day');
+      filteredCollection = filteredCollection.filterDate(startDate, endDate);
+      console.log(new Date(startDate.getInfo().value));
+      console.log(new Date(endDate.getInfo().value));
+    }
+    const image = filteredCollection.sort('GENERATION_TIME', !getImageBeforeDate).first().clip(geometry);
+    return image;
+  }
+
+  generateImageUrl(image: any, index: string) {
+    // Calculate index (if available)
     let indexesObj = new Indexes(image);
     let imageIndex = indexesObj.indexesList.find(idx => idx.name === index);
     if (!imageIndex) throw new NonExistenceError('Index is not supported (yet)', [`index: ${index}`]);
@@ -40,9 +57,14 @@ class GEEService {
         palette: imageIndex.visualizeOptions.palette,
       })
       .getThumbURL({ dimensions: '1024x1024', format: 'png' });
-    // Extract image date from ee.Date
-    const imageDate = new Date(image.date().getInfo().value);
-    // Find bounding box
+    return imageUrl;
+  }
+
+  getImageDate(image: any) {
+    return new Date(image.date().getInfo().value);
+  }
+
+  getPolygonBoundingBox(polygon: Float32List[]) {
     let northWest = [
       Math.max(...polygon.map(coord => coord[1])),
       Math.min(...polygon.map(coord => coord[0])),
@@ -51,21 +73,12 @@ class GEEService {
       Math.min(...polygon.map(coord => coord[1])),
       Math.max(...polygon.map(coord => coord[0])),
     ];
-    const imageBbox = [northWest, southEast];
-    // Return processed data
-    const response: ImagesResponseI = {
-      url: imageUrl,
-      date: imageDate,
-      bbox: imageBbox,
-    };
-    return response;
+    return [northWest, southEast];
   }
 
-  getNdviValues(lng: number, lat: number, cloudyPercentage: number, seedDate: string) {
-    let coodrinates = ee.Geometry.Point(lng, lat);
+  // #endregion
 
-    return coodrinates;
-  }
+  // #region Auxiliar methods
 
   test() {
     const NAIP = ee.ImageCollection('USDA/NAIP/DOQQ');
@@ -80,6 +93,8 @@ class GEEService {
       .getThumbURL({ dimensions: '1024x1024', format: 'jpg' });
     return { url, points: bounds.coordinates_ };
   }
+
+  // #endregion
 }
 
 export default new GEEService();
