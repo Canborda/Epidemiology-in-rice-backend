@@ -6,6 +6,7 @@ import { decryptData } from '../utils/functions';
 
 import { UserI } from '../models/dtos/user.model';
 import { MapI, MapModel } from '../models/dtos/map.model';
+import { CropI, CropModel } from '../models/dtos/crop.model';
 import { ImagesResponseI, ValuesResponseI } from '../models/interfaces';
 
 import geeService from '../services/gee.service';
@@ -104,6 +105,32 @@ class GeeController {
     }
   }
 
+  public async getPhenologyIndexValues(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user: UserI = res.locals.user;
+      const { map_id, index, cloudyPercentage } = res.locals.schema;
+      const map = await this.getMap(user._id, map_id);
+      const crop = await this.getCrop(map.crop);
+      // Use GEE service
+      ee.data.authenticateViaPrivateKey(
+        this.getCredentials(),
+        () => {
+          ee.initialize();
+          // Temporal dummy
+          const result = { map, crop };
+          // Add data to response and go to responseMiddleware
+          res.locals.operation = OPERATIONS.gee.phenology;
+          res.locals.content = { data: result };
+          next();
+        },
+        (e: any) => next(e),
+      );
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+
   public async test(req: Request, res: Response, next: NextFunction) {
     try {
       ee.data.authenticateViaPrivateKey(
@@ -147,6 +174,14 @@ class GeeController {
     }
     map.polygon = this.invertCoordinates(map.polygon);
     return map;
+  }
+
+  private async getCrop(cropId: string): Promise<CropI> {
+    const crop = await CropModel.findById(cropId);
+    if (!crop) {
+      throw new NonExistenceError('Crop does not exists', { cropId });
+    }
+    return crop;
   }
 
   private invertCoordinates(coordinates: Float32List[]): Float32List[] {

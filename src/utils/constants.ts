@@ -15,6 +15,7 @@ export const ROUTES = {
     indexes: '/indexes',
     images: '/images',
     values: '/values',
+    phenology: '/phenology',
   },
   crop: {
     BASE: '/api/v1/crops',
@@ -46,5 +47,6 @@ export const OPERATIONS = {
     indexes: 'GEE-GET_AVAILABLE_INDEXES',
     images: 'GEE-GET_IMAGES',
     values: 'GEE-GET_VALUES',
+    phenology: 'GEE-GET_PHENOLOGY_INDEX_VALUES',
   },
 };

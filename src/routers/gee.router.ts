@@ -11,6 +11,12 @@ const router = express.Router();
 router.get(ROUTES.gee.indexes, authMiddleware, geeController.getIndexes.bind(geeController));
 router.get(ROUTES.gee.images, authMiddleware, geeValidator.get, geeController.getImages.bind(geeController));
 router.get(ROUTES.gee.values, authMiddleware, geeValidator.get, geeController.getValues.bind(geeController));
+router.get(
+  ROUTES.gee.phenology,
+  authMiddleware,
+  geeValidator.get,
+  geeController.getPhenologyIndexValues.bind(geeController),
+);
 
 router.post('/', geeController.test.bind(geeController));
 
