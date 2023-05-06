@@ -1,6 +1,7 @@
 import { NonExistenceError } from '../utils/errors';
 
 import { Indexes } from '../models/INDEXES_DATA';
+import { IndexDataI, PixelDataI } from '../models/interfaces';
 
 const ee = require('@google/earthengine');
 
@@ -22,7 +23,7 @@ class GEEService {
     cloudyPercentage?: number,
     date?: string,
     getImageBeforeDate: boolean = true,
-  ) {
+  ): any {
     const geometry = ee.Geometry.Polygon(polygon);
     let filteredCollection = ee.ImageCollection(this.COLLECTION).filterBounds(geometry);
     if (cloudyPercentage) {
@@ -35,19 +36,13 @@ class GEEService {
       let endDate = ee.Date(getImageBeforeDate ? date : new Date().toISOString().slice(0, 10));
       if (!getImageBeforeDate) endDate = endDate.advance(1, 'day');
       filteredCollection = filteredCollection.filterDate(startDate, endDate);
-      console.log(new Date(startDate.getInfo().value));
-      console.log(new Date(endDate.getInfo().value));
     }
     const image = filteredCollection.sort('GENERATION_TIME', !getImageBeforeDate).first().clip(geometry);
     return image;
   }
 
-  generateImageUrl(image: any, index: string) {
-    // Calculate index (if available)
-    let indexesObj = new Indexes(image);
-    let imageIndex = indexesObj.indexesList.find(idx => idx.name === index);
-    if (!imageIndex) throw new NonExistenceError('Index is not supported (yet)', [`index: ${index}`]);
-    // Generate image URL
+  generateImageUrl(image: any, index: string): string {
+    let imageIndex: IndexDataI = this.getIndexesObj(image, index);
     const imageUrl = ee
       .Image([imageIndex.formula.rename(index)])
       .visualize({
@@ -59,6 +54,34 @@ class GEEService {
       .getThumbURL({ dimensions: '1024x1024', format: 'png' });
     return imageUrl;
   }
+
+  extractPixels(image: any, index: string, polygon: Float32List[]): PixelDataI[] {
+    let imageIndex: IndexDataI = this.getIndexesObj(image, index);
+    let imageBands = imageIndex.formula.rename(index).addBands(ee.Image.pixelLonLat());
+    let bandValues = imageBands.reduceRegion(ee.Reducer.toList(), ee.Geometry.Polygon(polygon));
+    let features = ee.Array(bandValues.values()).transpose().toList();
+    let pixels: PixelDataI[] = features.getInfo().map((feature: any) => {
+      const pixel: PixelDataI = {
+        value: feature[0],
+        latitude: feature[1],
+        longitude: feature[2],
+      };
+      return pixel;
+    });
+    return pixels;
+  }
+
+  calculatePixelsAverage(pixels: PixelDataI[]): number {
+    const sum = pixels.reduce(
+      (accumulator: number, currentValue: PixelDataI) => accumulator + currentValue.value,
+      0,
+    );
+    return sum / pixels.length;
+  }
+
+  // #endregion
+
+  // #region Auxiliar methods
 
   getImageDate(image: any) {
     return new Date(image.date().getInfo().value);
@@ -76,9 +99,12 @@ class GEEService {
     return [northWest, southEast];
   }
 
-  // #endregion
-
-  // #region Auxiliar methods
+  private getIndexesObj(image: any, index: string): IndexDataI {
+    let indexesObj = new Indexes(image);
+    let imageIndex = indexesObj.indexesList.find(idx => idx.name === index);
+    if (!imageIndex) throw new NonExistenceError('Index is not supported (yet)', [`index: ${index}`]);
+    return imageIndex;
+  }
 
   test() {
     const NAIP = ee.ImageCollection('USDA/NAIP/DOQQ');

@@ -14,6 +14,7 @@ export const ROUTES = {
     BASE: '/api/v1/gee',
     indexes: '/indexes',
     images: '/images',
+    values: '/values',
   },
   crop: {
     BASE: '/api/v1/crops',
@@ -44,5 +45,6 @@ export const OPERATIONS = {
   gee: {
     indexes: 'GEE-GET_AVAILABLE_INDEXES',
     images: 'GEE-GET_IMAGES',
+    values: 'GEE-GET_VALUES',
   },
 };

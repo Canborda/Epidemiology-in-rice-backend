@@ -6,7 +6,7 @@ import { decryptData } from '../utils/functions';
 
 import { UserI } from '../models/dtos/user.model';
 import { MapI, MapModel } from '../models/dtos/map.model';
-import { ImagesResponseI } from '../models/interfaces';
+import { ImagesResponseI, ValuesResponseI } from '../models/interfaces';
 
 import geeService from '../services/gee.service';
 
@@ -62,6 +62,37 @@ class GeeController {
           };
           // Add data to response and go to responseMiddleware
           res.locals.operation = OPERATIONS.gee.images;
+          res.locals.content = { data: result };
+          next();
+        },
+        (e: any) => next(e),
+      );
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+
+  public async getValues(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user: UserI = res.locals.user;
+      const { map_id, index, cloudyPercentage } = res.locals.schema;
+      const map = await this.getMap(user._id, map_id);
+      // Use GEE service
+      ee.data.authenticateViaPrivateKey(
+        this.getCredentials(),
+        () => {
+          ee.initialize();
+          // 1. Get latest image
+          const image = geeService.selectImage(map.polygon, cloudyPercentage);
+          // 2. Extract index value for each pixel on the geometry
+          const pixels = geeService.extractPixels(image, index, map.polygon);
+          // 3. Calculate mean
+          const mean = geeService.calculatePixelsAverage(pixels);
+          // 4. Pack result
+          const result: ValuesResponseI = { pixels, mean };
+          // Add data to response and go to responseMiddleware
+          res.locals.operation = OPERATIONS.gee.values;
           res.locals.content = { data: result };
           next();
         },
