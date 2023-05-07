@@ -8,7 +8,7 @@ import mapController from '../controllers/map.controller';
 
 const router = express.Router();
 
-router.get('/', authMiddleware, mapController.get);
+router.get('/', authMiddleware, mapController.getAll);
 router.post('/', authMiddleware, mapValidator.create, mapController.create.bind(mapController));
 router.patch(
   ROUTES.maps.update,

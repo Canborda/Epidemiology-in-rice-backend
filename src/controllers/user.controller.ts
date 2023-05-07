@@ -13,7 +13,7 @@ class UserController {
    * All endpoints are exposed for the frontend.
    */
 
-  //#region AUTHENTICATION
+  // #region AUTHENTICATION methods
 
   public async login(req: Request, res: Response, next: NextFunction) {
     try {
@@ -62,9 +62,9 @@ class UserController {
     }
   }
 
-  //#endregion
+  // #endregion
 
-  //#region CRUD
+  // #region CRUD methods
 
   public async getUser(req: Request, res: Response, next: NextFunction) {
     try {
@@ -101,9 +101,9 @@ class UserController {
     }
   }
 
-  //#endregion
+  // #endregion
 
-  //#region Existence validators
+  // #region Existence validators
 
   private async validateEmail(email: string) {
     const exists = await UserModel.findOne({ email });
@@ -112,7 +112,7 @@ class UserController {
     }
   }
 
-  //#endregion
+  // #endregion
 }
 
 export default new UserController();

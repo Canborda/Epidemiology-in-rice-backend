@@ -9,7 +9,7 @@ import cropController from '../controllers/crop.controller';
 
 const router = express.Router();
 
-router.get('/', authMiddleware, cropController.get);
+router.get('/', authMiddleware, cropController.getAll);
 router.post(
   '/',
   authMiddleware,

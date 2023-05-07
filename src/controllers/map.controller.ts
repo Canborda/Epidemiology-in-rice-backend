@@ -1,25 +1,26 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { OPERATIONS } from '../utils/constants';
-import { ExistenceError, NonExistenceError } from '../utils/errors';
 
-import { MapI, MapModel } from '../models/dtos/map.model';
-import { CropModel } from '../models/dtos/crop.model';
 import { UserI } from '../models/dtos/user.model';
+import { MapI, MapModel } from '../models/dtos/map.model';
+
+import cropService from '../services/crop.service';
+import mapService from '../services/map.service';
 
 class MapController {
   /**
    * This controller contains the CRUD for the [maps] collection.
-   * All endpoints are exposed for the frontend.
+   * All endpoints are exposed for the frontend only for REQUESTING USER.
    */
 
-  //#region CRUD
+  // #region CRUD methods
 
-  public async get(req: Request, res: Response, next: NextFunction) {
+  public async getAll(req: Request, res: Response, next: NextFunction) {
     try {
       const user: UserI = res.locals.user;
       // Retrieve filtered documents
-      const result = await MapModel.find({ owner: user._id });
+      const result: MapI[] = await MapModel.find({ owner: user._id });
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.maps.get;
       res.locals.content = { count: result.length, data: result };
@@ -36,14 +37,14 @@ class MapController {
       // Asign owner to new document
       map.owner = user._id;
       // Check if crop exists
-      await this.validateCrop(map.crop);
+      await cropService.findCrop(map.crop);
       // Find if aleady exists a map with same name for the same user
-      await this.validateName(user._id, map.name);
+      await mapService.validateMapName(user._id, map.name);
       // Insert new document
-      const result = await MapModel.create(map);
+      const newMap: MapI = await MapModel.create(map);
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.maps.create;
-      res.locals.content = { data: result };
+      res.locals.content = { data: newMap };
       res.locals.status = 201;
       next();
     } catch (error) {
@@ -53,23 +54,23 @@ class MapController {
 
   public async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const user: UserI = res.locals.user;
-      const map: MapI = res.locals.schema;
       const { map_id } = req.params;
+      const user: UserI = res.locals.user;
+      const newMap: MapI = res.locals.schema;
       // Find map (if exists)
-      const result = await this.findUserMap(user._id, map_id);
+      const oldMap: MapI = await mapService.findMap(user._id, map_id, false);
       // Update fields (if given)
-      if (map.crop) {
-        await this.validateCrop(map.crop);
-        result.crop = map.crop;
+      if (newMap.crop) {
+        await cropService.findCrop(newMap.crop);
+        oldMap.crop = newMap.crop;
       }
-      if (map.name) {
-        await this.validateName(user._id, map.name);
-        result.name = map.name;
+      if (newMap.name) {
+        await mapService.validateMapName(user._id, newMap.name);
+        oldMap.name = newMap.name;
       }
-      if (map.seedDate) result.seedDate = map.seedDate;
-      if (map.polygon) result.polygon = map.polygon;
-      await result.save();
+      if (newMap.seedDate) oldMap.seedDate = newMap.seedDate;
+      if (newMap.polygon) oldMap.polygon = newMap.polygon;
+      await oldMap.save();
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.maps.update;
       res.locals.status = 204;
@@ -81,12 +82,12 @@ class MapController {
 
   public async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const user: UserI = res.locals.user;
       const { map_id } = req.params;
+      const user: UserI = res.locals.user;
       // Find map (if exists)
-      const result = await this.findUserMap(user._id, map_id);
+      const map: MapI = await mapService.findMap(user._id, map_id, false);
       // Remove map
-      await result.delete();
+      await map.delete();
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.maps.delete;
       res.locals.status = 204;
@@ -96,31 +97,7 @@ class MapController {
     }
   }
 
-  //#endregion
-
-  //#region Existence validators
-
-  private async validateName(owner: string, name: string) {
-    const exists = await MapModel.findOne({ owner, name });
-    if (exists) {
-      throw new ExistenceError('A map with this name already exists for the user', { name });
-    }
-  }
-
-  private async validateCrop(crop_id: string) {
-    const exists = await CropModel.findById(crop_id);
-    if (!exists) throw new NonExistenceError('Crop not found for given params', { crop_id });
-  }
-
-  private async findUserMap(user_id: string, map_id: string): Promise<MapI> {
-    const result = await MapModel.findOne({ owner: user_id, _id: map_id });
-    if (!result) {
-      throw new NonExistenceError('Map does not exists or does not belong to user', { user_id, map_id });
-    }
-    return result;
-  }
-
-  //#endregion
+  // #endregion
 }
 
 export default new MapController();
