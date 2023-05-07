@@ -7,7 +7,7 @@ import { decryptData } from '../utils/functions';
 import { UserI } from '../models/dtos/user.model';
 import { MapI, MapModel } from '../models/dtos/map.model';
 import { CropI, CropModel } from '../models/dtos/crop.model';
-import { ImagesResponseI, ValuesResponseI } from '../models/interfaces';
+import { ImagesResponseI, PhenologyResponseI, ValuesResponseI } from '../models/interfaces';
 
 import geeService from '../services/gee.service';
 
@@ -116,8 +116,30 @@ class GeeController {
         this.getCredentials(),
         () => {
           ee.initialize();
-          // Temporal dummy
-          const result = { map, crop };
+          // 1. Calculate range dates
+          const startDate = new Date(map.seedDate);
+          const endDate = this.advanceDays(startDate, crop.phenology[crop.phenology.length - 1].days + 1);
+          // 2. Get images in range
+          const imageCollection = geeService.selectImagesInRage(
+            map.polygon,
+            startDate,
+            endDate,
+            cloudyPercentage,
+          );
+          // 3. Iterate over images
+          const indexValues: PhenologyResponseI[] = [];
+          const imageCollectionList = imageCollection.toList(imageCollection.size());
+          for (let i = 0; i < imageCollection.size().getInfo(); i++) {
+            let image = ee.Image(imageCollectionList.get(i));
+            // 4. Calculate image date
+            const date = geeService.getImageDate(image);
+            // 5. Calculate image index value
+            let pixels = geeService.extractPixels(image, index, map.polygon);
+            const value = geeService.calculatePixelsAverage(pixels);
+            // 6. Add result to response array
+            indexValues.push({ date, value });
+          }
+          const result: PhenologyResponseI[] = indexValues;
           // Add data to response and go to responseMiddleware
           res.locals.operation = OPERATIONS.gee.phenology;
           res.locals.content = { data: result };
@@ -186,6 +208,10 @@ class GeeController {
 
   private invertCoordinates(coordinates: Float32List[]): Float32List[] {
     return coordinates.map(point => [point[1], point[0]]);
+  }
+
+  private advanceDays(startDate: Date, days: number): Date {
+    return new Date(startDate.getTime() + days * 24 * 60 * 60 * 1000);
   }
 
   // #endregion

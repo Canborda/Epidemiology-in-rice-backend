@@ -26,3 +26,8 @@ export interface ValuesResponseI {
   pixels: PixelDataI[];
   mean: number;
 }
+
+export interface PhenologyResponseI {
+  date: Date;
+  value: number;
+}

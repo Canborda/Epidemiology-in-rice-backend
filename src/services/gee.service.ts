@@ -10,7 +10,7 @@ class GEEService {
    * Handles all operations over images using GEE API
    * for more references go to  https://developers.google.com/earth-engine/apidocs.
    */
-  COLLECTION = 'COPERNICUS/S2';
+  private COLLECTION = 'COPERNICUS/S2';
 
   // #region FLOW methods
 
@@ -39,6 +39,25 @@ class GEEService {
     }
     const image = filteredCollection.sort('GENERATION_TIME', !getImageBeforeDate).first().clip(geometry);
     return image;
+  }
+
+  selectImagesInRage(
+    polygon: Float32List[],
+    startDate: Date,
+    endDate: Date,
+    cloudyPercentage?: number,
+  ): any {
+    const geometry = ee.Geometry.Polygon(polygon);
+    let filteredCollection = ee
+      .ImageCollection(this.COLLECTION)
+      .filterBounds(geometry)
+      .filterDate(startDate, endDate);
+    if (cloudyPercentage) {
+      filteredCollection = filteredCollection.filter(
+        ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', cloudyPercentage),
+      );
+    }
+    return filteredCollection;
   }
 
   generateImageUrl(image: any, index: string): string {
