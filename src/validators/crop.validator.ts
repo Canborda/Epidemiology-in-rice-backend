@@ -47,6 +47,19 @@ class CropValidator {
     const error_msg = 'Error validating body to update crop';
     validatorMiddleware(req, res, next, req.body, schema, error_msg);
   }
+
+  public phenology(req: Request, res: Response, next: NextFunction) {
+    // Define validation schema
+    const schema = Joi.object({
+      map_id: Joi.string().required(),
+      index: Joi.string()
+        .valid(...Object.values(INDEXES))
+        .required(),
+    });
+    // Call validation middleware
+    const error_msg = 'Error validating query params to get CROP data';
+    validatorMiddleware(req, res, next, req.query, schema, error_msg);
+  }
 }
 
 export default new CropValidator();

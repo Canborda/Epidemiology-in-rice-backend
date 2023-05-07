@@ -36,7 +36,7 @@ class App {
   private initRoutes() {
     // Add routers
     this._app.use(ROUTES.users.BASE, userRouter);
-    this._app.use(ROUTES.crop.BASE, cropRouter);
+    this._app.use(ROUTES.crops.BASE, cropRouter);
     this._app.use(ROUTES.maps.BASE, mapRouter);
     this._app.use(ROUTES.gee.BASE, geeRouter);
   }

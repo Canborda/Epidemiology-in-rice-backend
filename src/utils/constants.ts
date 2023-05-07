@@ -5,6 +5,12 @@ export const ROUTES = {
     signup: '/signup',
     makeAdmin: '/:user_id/make-admin',
   },
+  crops: {
+    BASE: '/api/v1/crops',
+    update: '/:crop_id',
+    delete: '/:crop_id',
+    phenology: '/phenology',
+  },
   maps: {
     BASE: '/api/v1/maps',
     update: '/:map_id',
@@ -16,11 +22,6 @@ export const ROUTES = {
     images: '/images',
     values: '/values',
     phenology: '/phenology',
-  },
-  crop: {
-    BASE: '/api/v1/crops',
-    update: '/:crop_id',
-    delete: '/:crop_id',
   },
 };
 
@@ -36,6 +37,7 @@ export const OPERATIONS = {
     create: 'CROPS-CREATE',
     update: 'CROPS-UPDATE',
     delete: 'CROPS-DELETE',
+    phenology: 'CROPS-GET_PHENOLOGY_INDEX_VALUES',
   },
   maps: {
     get: 'MAPS-GET',

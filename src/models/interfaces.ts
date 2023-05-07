@@ -28,6 +28,7 @@ export interface ValuesResponseI {
 }
 
 export interface PhenologyResponseI {
+  name?: string;
   date: Date;
   value: number;
 }

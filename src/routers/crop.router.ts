@@ -18,17 +18,24 @@ router.post(
   cropController.create.bind(cropController),
 );
 router.patch(
-  ROUTES.crop.update,
+  ROUTES.crops.update,
   authMiddleware,
   adminMiddleware,
   cropValidator.update.bind(cropValidator),
   cropController.update.bind(cropController),
 );
 router.delete(
-  ROUTES.crop.delete,
+  ROUTES.crops.delete,
   authMiddleware,
   adminMiddleware,
   cropController.delete.bind(cropController),
+);
+
+router.get(
+  ROUTES.crops.phenology,
+  authMiddleware,
+  cropValidator.phenology,
+  cropController.getPhenologyIndexValues.bind(cropController),
 );
 
 export default router;
