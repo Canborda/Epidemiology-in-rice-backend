@@ -110,7 +110,7 @@ class CropController {
       const result: PhenologyResponseI[] = indexValues;
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.crops.phenology;
-      res.locals.content = { data: result };
+      res.locals.content = { count: result.length, data: result };
       next();
     } catch (error) {
       next(error);

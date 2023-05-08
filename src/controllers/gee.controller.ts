@@ -139,16 +139,21 @@ class GeeController {
             let image = ee.Image(imageCollectionList.get(i));
             // 4. Calculate image date
             const date = geeService.getImageDate(image);
-            // 5. Calculate image index value
-            let pixels = geeService.extractPixels(image, index, map.polygon);
-            const value = geeService.calculatePixelsAverage(pixels);
-            // 6. Add result to response array
-            indexValues.push({ date, value });
+            const isSameDate = indexValues.find(
+              idx => idx.date.toISOString().slice(1, 10) === date.toISOString().slice(1, 10),
+            );
+            if (!isSameDate) {
+              // 5. Calculate image index value
+              let pixels = geeService.extractPixels(image, index, map.polygon);
+              const value = geeService.calculatePixelsAverage(pixels);
+              // 6. Add result to response array
+              indexValues.push({ date, value });
+            }
           }
           const result: PhenologyResponseI[] = indexValues;
           // Add data to response and go to responseMiddleware
           res.locals.operation = OPERATIONS.gee.phenology;
-          res.locals.content = { data: result };
+          res.locals.content = { count: result.length, data: result };
           next();
         },
         (e: any) => next(e),
