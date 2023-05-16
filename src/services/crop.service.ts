@@ -15,10 +15,10 @@ class CropService {
     return crop;
   }
 
-  async validateCrop(name: string, variety: string): Promise<void> {
-    const filter = { name, variety };
+  async validateCrop(variety: string): Promise<void> {
+    const filter = { variety };
     const crop = await CropModel.findOne(filter);
-    if (crop) throw new ExistenceError('A crop with the same name-variety already exists', filter);
+    if (crop) throw new ExistenceError('A crop with the same variety already exists', filter);
   }
 
   // #endregion

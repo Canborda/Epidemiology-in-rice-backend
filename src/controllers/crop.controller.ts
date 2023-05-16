@@ -35,8 +35,8 @@ class CropController {
   public async create(req: Request, res: Response, next: NextFunction) {
     try {
       const crop: CropI = res.locals.schema;
-      // Find if already exist a name-variety crop combination
-      await cropService.validateCrop(crop.name, crop.variety);
+      // Find if already exist a variety
+      await cropService.validateCrop(crop.variety);
       // Insert new document
       const newCrop: CropI = await CropModel.create(crop);
       // Add data to response and go to responseMiddleware

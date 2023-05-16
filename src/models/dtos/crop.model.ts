@@ -3,7 +3,6 @@ import { Schema, Document, model } from 'mongoose';
 import { INDEXES } from '../../utils/enums';
 
 export interface CropI extends Document {
-  name: string;
   variety: string;
   phenology: PhenologyI[];
 }
@@ -20,10 +19,6 @@ export interface IndexI {
 }
 
 const cropSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-  },
   variety: {
     type: String,
     required: true,
@@ -35,7 +30,7 @@ const cropSchema = new Schema({
 });
 
 // Add index for searches by name and variety
-cropSchema.index({ name: 1, variety: -1 }, { unique: true });
+cropSchema.index({ variety: 1 }, { unique: true });
 
 // Generate & export model
 export const CropModel = model<CropI>('Crop', cropSchema);

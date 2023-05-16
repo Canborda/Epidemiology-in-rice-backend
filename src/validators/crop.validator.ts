@@ -29,7 +29,6 @@ class CropValidator {
   public create(req: Request, res: Response, next: NextFunction) {
     // Define validation schema
     const schema = Joi.object<CropI>({
-      name: Joi.string().required(),
       variety: Joi.string().required(),
       phenology: Joi.array().items(this.phenologySchema).required(),
     });
