@@ -113,7 +113,7 @@ class GeeController {
       const { map_id, index, cloudyPercentage } = res.locals.schema;
       const user: UserI = res.locals.user;
       const map: MapI = await mapService.findMap(user._id, map_id, true);
-      const crop: CropI = await cropService.findCrop(map.crop);
+      const crop: CropI = await cropService.getCropById(map.crop);
       // Use GEE service
       ee.data.authenticateViaPrivateKey(
         this.getCredentials(),

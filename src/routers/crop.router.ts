@@ -24,6 +24,13 @@ router.patch(
   cropValidator.update.bind(cropValidator),
   cropController.update.bind(cropController),
 );
+router.put(
+  '/',
+  authMiddleware,
+  adminMiddleware,
+  cropValidator.updateAll.bind(cropValidator),
+  cropController.updateAll.bind(cropController),
+);
 router.delete(
   ROUTES.crops.delete,
   authMiddleware,

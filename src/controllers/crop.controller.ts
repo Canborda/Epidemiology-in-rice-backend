@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { OPERATIONS } from '../utils/constants';
 
 import { UserI } from '../models/dtos/user.model';
-import { CropI, CropModel } from '../models/dtos/crop.model';
+import { CropI } from '../models/dtos/crop.model';
 import { MapI } from '../models/dtos/map.model';
 import { PhenologyResponseI } from '../models/interfaces';
 
@@ -22,7 +22,7 @@ class CropController {
 
   public async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const result: CropI[] = await CropModel.find();
+      const result: CropI[] = await cropService.getAllCrops();
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.crops.get;
       res.locals.content = { count: result.length, data: result };
@@ -35,10 +35,7 @@ class CropController {
   public async create(req: Request, res: Response, next: NextFunction) {
     try {
       const crop: CropI = res.locals.schema;
-      // Find if already exist a variety
-      await cropService.validateCrop(crop.variety);
-      // Insert new document
-      const newCrop: CropI = await CropModel.create(crop);
+      const newCrop: CropI = await cropService.createCrop(crop);
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.crops.create;
       res.locals.content = { data: newCrop };
@@ -53,9 +50,7 @@ class CropController {
     try {
       const { crop_id } = req.params;
       const newCrop: CropI = res.locals.schema;
-      // Find crop (if exists)
-      const oldCrop: CropI = await cropService.findCrop(crop_id);
-      // Update fields (if exists)
+      const oldCrop: CropI = await cropService.getCropById(crop_id);
       if (newCrop.phenology) oldCrop.phenology = newCrop.phenology;
       await oldCrop.save();
       // Add data to response and go to responseMiddleware
@@ -67,13 +62,40 @@ class CropController {
     }
   }
 
+  public async updateAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const cropList: CropI[] = res.locals.schema.cropList;
+      // 1. Delete missing crops
+      const dbCropIds: string[] = (await cropService.getAllCrops()).map(crop => String(crop._id));
+      const reqCropIds: string[] = cropList.filter(crop => crop._id).map(crop => crop._id);
+      dbCropIds.forEach(async cropId => {
+        if (!reqCropIds.includes(cropId)) await cropService.deleteCrop(cropId);
+      });
+      for (const crop of cropList) {
+        if (crop._id) {
+          // 2. Update existing crops
+          let oldCrop: CropI = await cropService.getCropById(crop._id);
+          oldCrop.variety = crop.variety;
+          oldCrop.phenology = crop.phenology;
+          await oldCrop.save();
+        } else {
+          // 3. Create new crops
+          await cropService.createCrop(crop);
+        }
+      }
+      // Add data to  response and go to responseMiddleware
+      res.locals.operation = OPERATIONS.crops.updateAll;
+      res.locals.status = 204;
+      next();
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const { crop_id } = req.params;
-      // Find crop (if exists)
-      const crop: CropI = await cropService.findCrop(crop_id);
-      // Remove crop
-      await crop.delete();
+      await cropService.deleteCrop(crop_id);
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.crops.delete;
       res.locals.status = 204;
@@ -92,7 +114,7 @@ class CropController {
       const user: UserI = res.locals.user;
       const { map_id, index } = res.locals.schema;
       const map: MapI = await mapService.findMap(user._id, map_id, false);
-      const crop: CropI = await cropService.findCrop(map.crop);
+      const crop: CropI = await cropService.getCropById(map.crop);
       // 1. Iterate over phenology stages
       const indexValues: PhenologyResponseI[] = [];
       crop.phenology.forEach(stage => {

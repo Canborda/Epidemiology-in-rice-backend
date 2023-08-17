@@ -47,6 +47,26 @@ class CropValidator {
     validatorMiddleware(req, res, next, req.body, schema, error_msg);
   }
 
+  public updateAll(req: Request, res: Response, next: NextFunction) {
+    // Define validation schema
+    const schema = Joi.object({
+      cropList: Joi.array()
+        .items(
+          Joi.object<CropI>({
+            _id: Joi.string().optional(),
+            variety: Joi.string().required(),
+            phenology: Joi.array().items(this.phenologySchema).required(),
+            __v: Joi.number().optional(),
+          }),
+        )
+        .min(1)
+        .required(),
+    });
+    // Call validator middleware
+    const error_msg = 'Error validating body to update all crops';
+    validatorMiddleware(req, res, next, req.body, schema, error_msg);
+  }
+
   public phenology(req: Request, res: Response, next: NextFunction) {
     // Define validation schema
     const schema = Joi.object({

@@ -37,7 +37,7 @@ class MapController {
       // Asign owner to new document
       map.owner = user._id;
       // Check if crop exists
-      await cropService.findCrop(map.crop);
+      await cropService.getCropById(map.crop);
       // Find if aleady exists a map with same name for the same user
       await mapService.validateMapName(user._id, map.name);
       // Insert new document
@@ -61,7 +61,7 @@ class MapController {
       const oldMap: MapI = await mapService.findMap(user._id, map_id, false);
       // Update fields (if given)
       if (newMap.crop) {
-        await cropService.findCrop(newMap.crop);
+        await cropService.getCropById(newMap.crop);
         oldMap.crop = newMap.crop;
       }
       if (newMap.name) {

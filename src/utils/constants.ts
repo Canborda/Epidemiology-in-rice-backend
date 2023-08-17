@@ -36,6 +36,7 @@ export const OPERATIONS = {
     get: 'CROPS-GET',
     create: 'CROPS-CREATE',
     update: 'CROPS-UPDATE',
+    updateAll: 'CROPS-UPDATE_ALL',
     delete: 'CROPS-DELETE',
     phenology: 'CROPS-GET_PHENOLOGY_INDEX_VALUES',
   },
