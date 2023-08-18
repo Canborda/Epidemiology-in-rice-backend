@@ -65,7 +65,7 @@ class MapController {
         oldMap.crop = newMap.crop;
       }
       if (newMap.name) {
-        await mapService.validateMapName(user._id, newMap.name);
+        await mapService.validateMapName(user._id, newMap.name, oldMap.name);
         oldMap.name = newMap.name;
       }
       if (newMap.seedDate) oldMap.seedDate = newMap.seedDate;

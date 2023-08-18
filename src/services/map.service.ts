@@ -17,10 +17,12 @@ class MapService {
     return map;
   }
 
-  async validateMapName(userId: string, mapName: string) {
-    const filter = { owner: userId, name: mapName };
-    const exists = await MapModel.findOne(filter);
-    if (exists) throw new ExistenceError('A map with this name already exists for the user', filter);
+  async validateMapName(userId: string, newName: string, oldName?: string) {
+    if (newName !== oldName) {
+      const filter = { owner: userId, name: newName };
+      const exists = await MapModel.findOne(filter);
+      if (exists) throw new ExistenceError('A map with this name already exists for the user', filter);
+    }
   }
 
   // #endregion
