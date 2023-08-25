@@ -20,6 +20,11 @@ export const ROUTES = {
     BASE: '/api/v1/varieties',
     id: '/:varietyId',
   },
+  clusters: {
+    BASE: '/api/v1/clusters',
+    id: '/:clusterId',
+    filtered: '/filtered',
+  },
   gee: {
     BASE: '/api/v1/gee',
     indexes: '/indexes',
@@ -55,6 +60,13 @@ export const OPERATIONS = {
     create: 'VARIETIES-CREATE',
     update: 'VARIETIES-UPDATE',
     delete: 'VARIETIES-DELETE',
+  },
+  clusters: {
+    getAll: 'CLUSTERS-GET_ALL',
+    getFiltered: 'CLUSTERS-GET_FILTERED',
+    create: 'CLUSTERS-CREATE',
+    update: 'CLUSTERS-UPDATE',
+    delete: 'CLUSTERS-DELETE',
   },
   gee: {
     indexes: 'GEE-GET_AVAILABLE_INDEXES',

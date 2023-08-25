@@ -43,16 +43,16 @@ class VarietyController {
 
   public async update(req: Request, res: Response, next: NextFunction) {
     try {
+      // Retrieve data from DB
       const { varietyId } = req.params;
-      const newVariety: VarietyI = res.locals.schema;
-      const oldVariety: VarietyI = await varietyService.getVarietyById(varietyId);
-      if (newVariety.name !== oldVariety.name) {
-        oldVariety.name = newVariety.name;
-        await oldVariety.save();
-      }
+      const reqVariety: VarietyI = res.locals.schema;
+      const dbVariety: VarietyI = await varietyService.getVarietyById(varietyId);
+      // Update fields & save
+      dbVariety.name = reqVariety.name;
+      await dbVariety.save();
       // Add data to response and go to responseMiddleware
       res.locals.operation = OPERATIONS.varieties.update;
-      res.locals.content = { data: oldVariety };
+      res.locals.content = { data: dbVariety };
       next();
     } catch (error) {
       next(error);

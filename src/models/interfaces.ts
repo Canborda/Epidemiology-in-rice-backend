@@ -1,3 +1,8 @@
+export interface CoordinatesI {
+  latitude: number;
+  longitude: number;
+}
+
 export interface IndexDataI {
   name: string;
   formula: any;

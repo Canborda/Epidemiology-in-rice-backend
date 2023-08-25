@@ -4,19 +4,19 @@ import { VarietyI, VarietyModel } from '../models/dtos/variety.model';
 
 class VarietyService {
   /**
-   * Handles all operations over Variety documents.
+   * Handles all operations over Variety collection.
    */
 
   // #region Main methods
+
+  async getAllVarieties(): Promise<VarietyI[]> {
+    return await VarietyModel.find();
+  }
 
   async getVarietyById(varietyId: string): Promise<VarietyI> {
     const variety = await VarietyModel.findById(varietyId);
     if (!variety) throw new NonExistenceError('Variety not found for given ID', { varietyId });
     return variety;
-  }
-
-  async getAllVarieties(): Promise<VarietyI[]> {
-    return await VarietyModel.find();
   }
 
   async createVariety(variety: VarietyI): Promise<VarietyI> {
