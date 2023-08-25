@@ -11,6 +11,7 @@ import { ROUTES } from './utils/constants';
 import userRouter from './routers/user.router';
 import cropRouter from './routers/crop.router';
 import mapRouter from './routers/map.router';
+import varietyRouter from './routers/variety.router';
 import geeRouter from './routers/gee.router';
 
 class App {
@@ -38,6 +39,7 @@ class App {
     this._app.use(ROUTES.users.BASE, userRouter);
     this._app.use(ROUTES.crops.BASE, cropRouter);
     this._app.use(ROUTES.maps.BASE, mapRouter);
+    this._app.use(ROUTES.varieties.BASE, varietyRouter);
     this._app.use(ROUTES.gee.BASE, geeRouter);
   }
 

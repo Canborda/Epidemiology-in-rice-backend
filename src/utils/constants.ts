@@ -16,6 +16,10 @@ export const ROUTES = {
     update: '/:map_id',
     delete: '/:map_id',
   },
+  varieties: {
+    BASE: '/api/v1/varieties',
+    id: '/:varietyId',
+  },
   gee: {
     BASE: '/api/v1/gee',
     indexes: '/indexes',
@@ -45,6 +49,12 @@ export const OPERATIONS = {
     create: 'MAPS-CREATE',
     update: 'MAPS-UPDATE',
     delete: 'MAPS-DELETE',
+  },
+  varieties: {
+    getAll: 'VARIETIES-GET_ALL',
+    create: 'VARIETIES-CREATE',
+    update: 'VARIETIES-UPDATE',
+    delete: 'VARIETIES-DELETE',
   },
   gee: {
     indexes: 'GEE-GET_AVAILABLE_INDEXES',
