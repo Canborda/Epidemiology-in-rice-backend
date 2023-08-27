@@ -25,6 +25,11 @@ export const ROUTES = {
     id: '/:clusterId',
     filtered: '/filtered',
   },
+  phenologies: {
+    BASE: '/api/v1/phenologies',
+    id: '/:phenologyId',
+    filtered: '/filtered',
+  },
   gee: {
     BASE: '/api/v1/gee',
     indexes: '/indexes',
@@ -67,6 +72,13 @@ export const OPERATIONS = {
     create: 'CLUSTERS-CREATE',
     update: 'CLUSTERS-UPDATE',
     delete: 'CLUSTERS-DELETE',
+  },
+  phenologies: {
+    getAll: 'PHENOLOGIES-GET_ALL',
+    getFiltered: 'PHENOLOGIES-GET_FILTERED',
+    create: 'PHENOLOGIES-CREATE',
+    update: 'PHENOLOGIES-UPDATE',
+    delete: 'PHENOLOGIES-DELETE',
   },
   gee: {
     indexes: 'GEE-GET_AVAILABLE_INDEXES',
