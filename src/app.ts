@@ -14,6 +14,7 @@ import mapRouter from './routers/map.router';
 import varietyRouter from './routers/variety.router';
 import clusterRouter from './routers/cluster.router';
 import phenologyRouter from './routers/phenology.router';
+import indexRouter from './routers/index.router';
 import geeRouter from './routers/gee.router';
 
 class App {
@@ -44,6 +45,7 @@ class App {
     this._app.use(ROUTES.varieties.BASE, varietyRouter);
     this._app.use(ROUTES.clusters.BASE, clusterRouter);
     this._app.use(ROUTES.phenologies.BASE, phenologyRouter);
+    this._app.use(ROUTES.indexes.BASE, indexRouter);
     this._app.use(ROUTES.gee.BASE, geeRouter);
   }
 
